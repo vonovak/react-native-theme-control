@@ -49,13 +49,13 @@ If you want, `androidxCoreVersion` can be set to the version of the androidx cor
 * in `AppDelegate.m`
 
 ```diff
-+ #import "ThemeControl.h"
++ #import "RNThemeControl.h"
 
 //...
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [UIViewController new];
   rootViewController.view = rootView;
-+  [ThemeControl recoverApplicationTheme];
++  [RNThemeControl recoverApplicationTheme];
 
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
