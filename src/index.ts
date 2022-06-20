@@ -13,12 +13,6 @@ export * from './types';
 export { getThemePreference } from './NativeModule';
 const eventType = 'setThemePreference';
 
-/**
- * Sets the theme preference which influences the value returned by `useColorScheme()` hook.
- * can be `auto`, `light` or `dark`.
- *
- * `auto` means that the theme preference is determined by the system.
- * */
 export function setThemePreference(
   style: ThemePreference,
   options: SetThemeOptions = {}
@@ -27,9 +21,6 @@ export function setThemePreference(
   ThemeControlModule.setTheme(style, options);
 }
 
-/**
- * A React hook that returns the current theme preference, which might be `dark`, `light` (if you have set it before by calling `setThemePreference`) or `auto`.
- * */
 export const useThemePreference = (): ThemePreference => {
   const [themePreference, setPreference] =
     useState<ThemePreference>(getThemePreference);

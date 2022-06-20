@@ -18,6 +18,8 @@ import {
 } from '@vonovak/react-native-theme-control';
 import { MenuView } from '@react-native-menu/menu';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
+import { useState } from 'react';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 type Props = {
   barsBackground: ColorValue;
@@ -44,6 +46,7 @@ export function Screen({
 
   const textColorStyle = { color: textColor };
   const nextTheme = isDarkMode ? 'light' : 'dark';
+  const [show, setShow] = useState(false);
 
   const values: Array<ThemePreference> = ['light', 'dark', 'auto'];
   const changeAppearance = (newAppearance: string) => {
@@ -112,6 +115,13 @@ export function Screen({
         </Text>
       </MenuView>
       {navigate && <Button onPress={navigate} title="go to next screen" />}
+      <Button
+        onPress={() => {
+          setShow(true);
+          setTimeout(() => setShow(false), 2000);
+        }}
+        title="open+close date picker"
+      />
 
       {Platform.OS === 'android' && (
         <Button
@@ -119,6 +129,15 @@ export function Screen({
             setThemePreference(nextTheme, { restartActivity: true });
           }}
           title="toggle theme with android activity restart"
+        />
+      )}
+      {show && (
+        <DateTimePicker
+          value={new Date()}
+          mode={'date'}
+          is24Hour={true}
+          onChange={undefined}
+          style={{ width: 200 }}
         />
       )}
     </View>

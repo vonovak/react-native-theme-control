@@ -8,11 +8,6 @@ import { NavigationBar } from './NavigationBar';
  * */
 export type ThemeAwareStatusBarProps = StatusBarProps;
 
-/**
- * Thin wrapper on top of react-native's `StatusBar` that automatically determines the `barStyle` prop based on the active theme.
- * Specifically, if active color scheme is dark, then status bar icons will be rendered as light.
- * However, you can override this behavior by passing a custom `barStyle` prop.
- * */
 export const ThemeAwareStatusBar = ({
   barStyle,
   ...props
