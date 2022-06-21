@@ -89,8 +89,7 @@ RCT_REMAP_METHOD(setTheme,
     }
     UIApplication.sharedApplication.delegate.window.overrideUserInterfaceStyle = recoveredStyle;
     NSString* override = [RNThemeControl getRCTAppearanceOverride:recoveredStyle];
-    // TODO investigate why UITraitCollection.currentTraitCollection ignores overrideUserInterfaceStyle
-    // which is why this call is needed
+    // TODO investigate more into why this call is needed
     RCTOverrideAppearancePreference(override);
   }
 }
