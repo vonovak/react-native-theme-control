@@ -5,7 +5,7 @@ The code is located [here](https://github.com/vonovak-org/react-native-theme-con
 You can sponsor me [here](https://github.com/sponsors/vonovak).
 ___
 
-Control the native platform theme from react native.
+Control the native platform theme from react native, and persist it across application restarts.
 
 This means you can not only control your React Native Views but also the theme of native elements (tested with alerts, native menus and date pickers on both Android and iOS).
 
@@ -22,6 +22,10 @@ Using that information, you can then render your Views in dark or light mode des
 You might follow one of the many blog posts for theming React Native apps such as [here](https://blog.logrocket.com/comprehensive-guide-dark-mode-react-native/#dark-mode-react-native-using-context-api) or [here](https://medium.com/@ratebseirawan/react-native-dark-mode-done-right-13f83b39a4ca). The approach taken by the guides is to store the application theme in the JavaScript part of your app. However, this can easily leave your users with a broken experience because while the React Native views will be rendered correctly, the native views (Alert, Document picker, Date picker, Menu...) will not.
 
 This package provides a solution to change the application theme so that both react native and native components use the same theme - see the [relevant part of the video](https://youtu.be/NNYQj_T0Sf8?t=73).
+
+### Expo support
+
+Changing the theme will work with `expo-dev-client` but recovering the theme upon startup is currently not supported. If you want expo support, please [upovote here](https://github.com/vonovak/react-native-theme-control/issues/1).
 
 
 ## This Package Is Sponsorware 💰💰💰
