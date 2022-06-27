@@ -9,11 +9,16 @@ Control the native platform theme from react native, and persist it across appli
 
 This means you can not only control your React Native Views but also the theme of native elements (tested with alerts, native menus and date pickers on both Android and iOS).
 
+Integrating the package is easy: it exposes functions to control the theme, and you can read the active theme using `react-native.useColorScheme()`, which you're probably already using.
+
 Additionally, the package provides functionality to control the appearance (background and border color, light / dark buttons) of the Android navbar.
 
 ## Motivation
 
-The use case for the package is explained in a [youtube video](https://youtu.be/NNYQj_T0Sf8).
+The use case for the package is explained in a youtube video:
+
+[![Watch the video](https://img.youtube.com/vi/NNYQj_T0Sf8/sddefault.jpg)](https://youtu.be/NNYQj_T0Sf8)
+
 
 In React Native, you can use the `useColorScheme()` hook, or other functions from the `Appearance` API to get information about the system theme.
 
@@ -44,8 +49,8 @@ I simply adopted it because making open source is a lot of fun but is not sustai
 
 > Note: these links are available to my github sponsors only.
 
-Installation and usage instructions can be found [here](./docs/install.md).
+Installation and usage instructions can be found [here](https://github.com/vonovak-org/react-native-theme-control/tree/main/docs/install.md).
 
-The library api is documented in detail [here](./docs/readme-internal.md).
+The library api is documented in detail [here](https://github.com/vonovak-org/react-native-theme-control/tree/main/docs/readme-internal.md).
 
-More usage examples can be found [in the example project](./example).
+More usage examples can be found [in the example project](https://github.com/vonovak-org/react-native-theme-control).
