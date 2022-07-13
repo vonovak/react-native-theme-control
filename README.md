@@ -7,11 +7,19 @@ ___
 
 Control the native platform theme from react native, and persist it across application restarts.
 
-This means you can not only control your React Native Views but also the theme of native elements (tested with alerts, native menus and date pickers on both Android and iOS).
+This means you can not only control your React Native Views but also the theme of native elements. This was tested with alerts, native menus and date pickers on both Android and iOS, but should work more generally: see the iOS screenshots where keyboard background color is influenced too.
 
 Integrating the package is easy: it exposes functions to control the theme, and you can read the active theme using `react-native.useColorScheme()`, which you're probably already using.
 
 Additionally, the package provides functionality to control the appearance (background and border color, light / dark buttons) of the Android navbar.
+
+<table>
+  <tr><td><strong>light</strong></td><td><strong>dark</strong></td></tr>
+  <tr>
+    <td><p align="center"><img src="/img/light_mode.png" height="500"></p></td>
+    <td><p align="center"><img src="/img/dark_mode.png" height="500"></p></td>
+  </tr>
+</table>
 
 ## Motivation
 
