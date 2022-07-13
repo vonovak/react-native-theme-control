@@ -38,7 +38,7 @@ This package provides a solution to change the application theme so that both re
 
 ### Expo support
 
-Changing the theme will work with `expo-dev-client` but recovering the theme upon startup is currently not supported. If you want expo support, please [upovote here](https://github.com/vonovak/react-native-theme-control/issues/1).
+Changing the theme will work with `expo-dev-client` but recovering the theme upon startup is currently not supported. If you want expo support, please [upovote here](https://github.com/vonovak/react-native-theme-control/issues/1). Expo support is coming soon.
 
 
 ## This Package Is Sponsorware 💰💰💰
