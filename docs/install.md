@@ -3,6 +3,8 @@
 
 The minimum required RN version is 0.66.1. Also, iOS 13 or newer is required.
 
+Expo >= 45 is supported.
+
 ## Installation
 
 ```bash
@@ -19,9 +21,15 @@ Then, run `npx pod-install` and rebuild your iOS and Android projects.
 
 ### Expo
 
-I'm planning to add Expo support in the near future through a config plugin.
+add `@vonovak/react-native-theme-control` to the `plugins` entry in expo config file, e.g.:
+
+`"plugins": ["@vonovak/react-native-theme-control"]`
 
 ## Native files setup:
+
+There are manual installation steps that need to be performed:
+
+** Do not do this if you're using the expo config plugin! **
 
 ### Android
 

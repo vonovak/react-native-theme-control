@@ -90,7 +90,7 @@ function updatePropsStack() {
           backgroundColor: processColor(lastEntry.backgroundColor) ?? null,
           barStyle,
         };
-        ThemeControlModule.setNavbarAppearance(params);
+        ThemeControlModule.setNavbarAppearance(params).catch(console.error);
       }
 
       // Update the current props values.

@@ -20,18 +20,23 @@
     "!ios/build",
     "!**/__tests__",
     "!**/__fixtures__",
-    "!**/__mocks__"
+    "!**/__mocks__",
+    "app.plugin.js",
+    "expo-module.config.json",
+    "plugin/build"
   ],
   "scripts": {
     "test": "jest",
     "typescript": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
-    "prepare": "bob build",
+    "prepare": "bob build && yarn run build:plugin",
     "release": "bob build && npx semantic-release",
     "android": "npx react-native run-android",
     "start": "npx patch-package && cd example && npx react-native start",
     "ios": "react-native run-ios --project-path example/ios",
-    "pods": "cd example && pod-install --quiet"
+    "pods": "cd example && pod-install --quiet",
+    "build:plugin": "tsc --build plugin",
+    "clean:plugin": "expo-module clean plugin"
   },
   "keywords": [
     "react-native",
@@ -50,8 +55,9 @@
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^16.2.4",
+    "@expo/config-plugins": "^5.0.0",
     "@react-native-community/datetimepicker": "^6.1.3",
-    "@react-native-community/eslint-config": "^2.0.0",
+    "@react-native-community/eslint-config": "^3.1.0",
     "@react-native-menu/menu": "^0.5.2",
     "@react-native-segmented-control/segmented-control": "^2.4.0",
     "@react-navigation/native": "^6.0.10",
@@ -60,15 +66,19 @@
     "@types/jest": "^26.0.0",
     "@types/react": "^17.0.45",
     "@types/react-native": "0.67.6",
+    "@typescript-eslint/eslint-plugin": "^5.33.0",
+    "@typescript-eslint/parser": "^5.33.0",
     "commitlint": "^16.2.4",
-    "eslint": "^7.2.0",
-    "eslint-config-prettier": "^7.0.0",
-    "eslint-plugin-prettier": "^3.1.3",
+    "eslint": "^8.21.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-ft-flow": "^2.0.1",
+    "eslint-plugin-prettier": "^4.2.1",
+    "expo-module-scripts": "^2.0.0",
     "husky": "^4.2.5",
     "jest": "^28.0.3",
     "metro-react-native-babel-preset": "^0.70.2",
     "pod-install": "^0.1.36",
-    "prettier": "^2.0.5",
+    "prettier": "^2.7.1",
     "react": "17.0.2",
     "react-native": "0.68.1",
     "react-native-builder-bob": "^0.18.0",
@@ -79,11 +89,17 @@
     "semantic-release": "^19.0.3",
     "typedoc": "^0.22.17",
     "typedoc-plugin-markdown": "^3.12.1",
-    "typescript": "^4.7.3"
+    "typescript": "^4.7.4"
   },
   "peerDependencies": {
+    "@expo/config-plugins": "^4.1.5",
     "react": "*",
     "react-native": "^0.66.1"
+  },
+  "peerDependenciesMeta": {
+    "@expo/config-plugins": {
+      "optional": true
+    }
   },
   "resolutions": {
     "@types/react": "17.0.44"
@@ -106,29 +122,6 @@
       "@commitlint/config-conventional"
     ]
   },
-  "eslintConfig": {
-    "root": true,
-    "extends": [
-      "@react-native-community",
-      "prettier"
-    ],
-    "rules": {
-      "prettier/prettier": [
-        "error",
-        {
-          "quoteProps": "consistent",
-          "singleQuote": true,
-          "tabWidth": 2,
-          "trailingComma": "es5",
-          "useTabs": false
-        }
-      ]
-    }
-  },
-  "eslintIgnore": [
-    "node_modules/",
-    "lib/"
-  ],
   "prettier": {
     "quoteProps": "consistent",
     "singleQuote": true,

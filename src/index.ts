@@ -5,6 +5,7 @@ import type { EventEmitter as VendoredEmitter } from 'react-native';
 import EventEmitter from 'react-native/Libraries/vendor/emitter/_EventEmitter';
 import type { SetThemeOptions, ThemePreference } from './types';
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
 const themeSwitchEventEmitter: VendoredEmitter = new EventEmitter();
 
 export * from './SystemBars';
@@ -18,7 +19,7 @@ export function setThemePreference(
   options: SetThemeOptions = {}
 ): void {
   themeSwitchEventEmitter.emit(eventType, style);
-  ThemeControlModule.setTheme(style, options);
+  ThemeControlModule.setTheme(style, options).catch(console.error);
 }
 
 export const useThemePreference = (): ThemePreference => {

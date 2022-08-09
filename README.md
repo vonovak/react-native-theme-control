@@ -1,6 +1,6 @@
 # react-native-theme-control
 
-Control the native platform theme from react native.
+Control the native platform theme from React Native. Supports expo via a config plugin.
 
 This means you can not only control your React Native Views but also the theme of native elements (tested with alerts, native menus and date pickers on both Android and iOS).
 
