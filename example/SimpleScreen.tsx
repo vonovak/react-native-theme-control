@@ -36,11 +36,12 @@ export function SimpleScreen() {
         backgroundColor={barsBackground}
         dividerColor={dividerColor}
       />
+      {/*@ts-expect-error*/}
       <SegmentedControl
         style={{ width: '100%' }}
         values={values}
         selectedIndex={values.indexOf(themePreference)}
-        onChange={({ nativeEvent }) => {
+        onChange={({ nativeEvent }: { nativeEvent: any }) => {
           setThemePreference(nativeEvent.value as ThemePreference);
         }}
       />

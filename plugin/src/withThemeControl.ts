@@ -1,20 +1,17 @@
+import { addImports } from '@expo/config-plugins/build/android/codeMod';
+import { mergeContents } from '@expo/config-plugins/build/utils/generateCode';
 import {
   ConfigPlugin,
   WarningAggregator,
   withAppDelegate,
   withMainActivity,
-} from '@expo/config-plugins';
-import { addImports } from '@expo/config-plugins/build/android/codeMod';
-import {
-  mergeContents,
-  MergeResults,
-} from '@expo/config-plugins/build/utils/generateCode';
+} from 'expo/config-plugins';
 
 const moduleName = '@vonovak/react-native-theme-control';
 const themeRecoveryTag = '-theme-recovery';
 
 const withMainActivityThemeRecovery: ConfigPlugin = (config) => {
-  return withMainActivity(config, async (config) => {
+  return withMainActivity(config, (config) => {
     const src = addImports(
       config.modResults.contents,
       ['eu.reactnativetraining.ThemeControlModule'],
@@ -34,7 +31,7 @@ const withMainActivityThemeRecovery: ConfigPlugin = (config) => {
   });
 };
 
-const addAppDelegateImport = (src: string): MergeResults => {
+const addAppDelegateImport = (src: string) => {
   return mergeContents({
     tag: moduleName + '-import',
     src,
@@ -45,7 +42,7 @@ const addAppDelegateImport = (src: string): MergeResults => {
   });
 };
 
-const modifyAppDelegateLaunchingCode = (src: string): MergeResults => {
+const modifyAppDelegateLaunchingCode = (src: string) => {
   return mergeContents({
     tag: moduleName + themeRecoveryTag,
     src,

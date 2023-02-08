@@ -52,6 +52,8 @@ export function Screen({
   const changeAppearance = (newAppearance: string) => {
     setThemePreference(newAppearance as ThemePreference, { persistTheme });
   };
+
+
   return (
     <View
       style={[
@@ -66,11 +68,12 @@ export function Screen({
         dividerColor={dividerColor}
         barStyle={'default'}
       />
+      {/*@ts-expect-error*/}
       <SegmentedControl
         style={{ width: '100%' }}
         values={values}
         selectedIndex={values.indexOf(themePreference)}
-        onChange={({ nativeEvent }) => {
+        onChange={({ nativeEvent }: {nativeEvent: any}) => {
           changeAppearance(nativeEvent.value);
         }}
       />
@@ -118,7 +121,7 @@ export function Screen({
       <Button
         onPress={() => {
           setShow(true);
-          setTimeout(() => setShow(false), 2000);
+          setTimeout(() => setShow(false), 4000);
         }}
         title="open+close date picker"
       />
@@ -137,7 +140,8 @@ export function Screen({
           mode={'date'}
           is24Hour={true}
           onChange={undefined}
-          style={{ width: 200 }}
+          style={{ width: '100%', height: 200 }}
+          display={"spinner"}
         />
       )}
     </View>

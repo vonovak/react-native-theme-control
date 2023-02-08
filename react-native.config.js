@@ -1,23 +1,21 @@
+const path = require('path');
 const project = (() => {
-  const path = require('path');
   try {
     const {
       androidManifestPath,
-      iosProjectPath,
     } = require('react-native-test-app');
     return {
       android: {
         sourceDir: path.join('example', 'android'),
         manifestPath: androidManifestPath(
-          path.join(__dirname, 'example', 'android')
+          path.join(__dirname, 'example', 'android'),
         ),
       },
       ios: {
-        project: iosProjectPath('example/ios'),
+        sourceDir: path.join('example', 'ios'),
       },
     };
   } catch (e) {
-    console.error('react-native-test-app not found', e);
     return undefined;
   }
 })();
@@ -28,6 +26,13 @@ module.exports = {
     '@vonovak/react-native-theme-control': {
       root: __dirname,
     },
+    expo: {
+      // otherwise RN cli will try to autolink expo
+      platforms: {
+        ios: null,
+        android: null,
+      },
+    }
   },
   ...(project ? { project } : undefined),
 };

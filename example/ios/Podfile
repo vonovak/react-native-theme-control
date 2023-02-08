@@ -1,7 +1,7 @@
 require_relative '../../node_modules/react-native-test-app/test_app'
 
-use_flipper!
+use_flipper! false
 
-workspace 'themeExample.xcworkspace'
+workspace 'theme-control-example.xcworkspace'
 
-use_test_app!
+use_test_app! :fabric_enabled => false, :turbomodule_enabled => false

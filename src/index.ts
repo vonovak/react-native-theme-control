@@ -2,10 +2,11 @@ import { getThemePreference, ThemeControlModule } from './NativeModule';
 import { useLayoutEffect, useState } from 'react';
 import type { EventEmitter as VendoredEmitter } from 'react-native';
 // @ts-ignore
-import EventEmitter from 'react-native/Libraries/vendor/emitter/_EventEmitter';
+import EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
 import type { SetThemeOptions, ThemePreference } from './types';
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
+// @ts-ignore
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 const themeSwitchEventEmitter: VendoredEmitter = new EventEmitter();
 
 export * from './SystemBars';

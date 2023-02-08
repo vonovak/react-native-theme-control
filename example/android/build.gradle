@@ -2,21 +2,15 @@ buildscript {
     def androidTestAppDir = "../../node_modules/react-native-test-app/android"
     apply(from: "${androidTestAppDir}/dependencies.gradle")
 
-    ext {
-      buildToolsVersion = "30.0.3"
-      minSdkVersion = 23
-      compileSdkVersion = 31
-      targetSdkVersion = 31
-    }
-
     repositories {
         mavenCentral()
         google()
     }
 
     dependencies {
-        classpath "com.android.tools.build:gradle:$androidPluginVersion"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        getReactNativeDependencies().each { dependency ->
+            classpath(dependency)
+        }
     }
 }
 

@@ -1,9 +1,11 @@
 
 # react-native-theme-control
 
-The minimum required RN version is 0.66.1. Also, iOS 13 or newer is required.
+iOS 13 or newer is required for theming logic. However, the package builds with iOS 10 and newer.
 
-Expo >= 45 is supported.
+Version 2 supports RN 0.70 and newer. Version 2 can also be used with Expo >=47.
+
+For version 1, the minimum required RN version is 0.66.1. Version 1 can also be used with Expo >=45 and < 47.
 
 ## Installation
 
@@ -29,7 +31,7 @@ add `@vonovak/react-native-theme-control` to the `plugins` entry in expo config 
 
 There are manual installation steps that need to be performed:
 
-** Do not do this if you're using the expo config plugin! **
+**Do not do this if you're using the expo config plugin!**
 
 ### Android
 
@@ -141,4 +143,18 @@ Make sure that inside of the `AndroidManifest.xml` file, the `android:configChan
 
 ```
 android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
+```
+
+#### Android scroll bar's color is not changing
+
+The list components might need to re-render once the theme changes for the scroll bars to re-draw.
+
+For example, if you're using `FlatList`, you can add a `key` prop to it, and change the value of the `key` prop when the theme changes. For example:
+
+```tsx
+const colorScheme = useColorScheme();
+
+<FlatList
+  key={colorScheme}
+/>
 ```

@@ -1,12 +1,12 @@
 pluginManagement {
     repositories {
         gradlePluginPortal()
-        mavenLocal()
+        mavenCentral()
         google()
     }
 }
 
-rootProject.name = "themeExample"
+rootProject.name = "theme-control-example"
 
 apply(from: "../../node_modules/react-native-test-app/test-app.gradle")
 applyTestAppSettings(settings)
