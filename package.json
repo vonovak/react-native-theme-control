@@ -2,7 +2,6 @@
   "name": "@terivo-dev/theamy",
   "version": "3.0.0",
   "private": false,
-  "description": "control the platform theme from react native",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/index.d.ts",
@@ -14,7 +13,7 @@
     "android",
     "ios",
     "cpp",
-    "react-native-theme-control.podspec",
+    "terivo-dev-theamy.podspec",
     "!lib/typescript/example",
     "!android/build",
     "!ios/build",
@@ -43,15 +42,10 @@
     "ios",
     "android"
   ],
-  "repository": "https://github.com/vonovak-org/react-native-theme-control",
-  "author": "vonovak <vonovak@gmail.com> (https://github.com/vonovak)",
   "license": "MPL-2.0",
-  "bugs": {
-    "url": "https://github.com/vonovak-org/react-native-theme-control/issues"
-  },
-  "homepage": "https://github.com/vonovak-org/react-native-theme-control#readme",
   "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^16.2.4",

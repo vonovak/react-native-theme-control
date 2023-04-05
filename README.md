@@ -1,4 +1,4 @@
-# react-native-theme-control
+# @terivo-dev/theamy
 
 Control the native platform theme from React Native. Supports expo via a config plugin.
 
