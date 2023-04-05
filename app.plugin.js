@@ -1,1 +1,1 @@
-module.exports = require('./plugin/build/withThemeControl');
+module.exports = require('./plugin/build/withTheamy');

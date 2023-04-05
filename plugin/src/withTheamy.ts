@@ -132,7 +132,7 @@ function getAppDelegateFilePath(projectRoot: string): string {
 /**
  * Apply theamy configuration for Expo projects.
  */
-const withThemeControl: ThemeConfigPlugin = (config, options = {}) => {
+const withTheamy: ThemeConfigPlugin = (config, options = {}) => {
   if (
     options.mode &&
     !['userPreference', 'light', 'dark'].includes(options.mode)
@@ -146,4 +146,4 @@ const withThemeControl: ThemeConfigPlugin = (config, options = {}) => {
   return config;
 };
 
-export default withThemeControl;
+export default withTheamy;

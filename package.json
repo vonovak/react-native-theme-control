@@ -13,7 +13,7 @@
     "android",
     "ios",
     "cpp",
-    "terivo-dev-theamy.podspec",
+    "theamy.podspec",
     "!lib/typescript/example",
     "!android/build",
     "!ios/build",
