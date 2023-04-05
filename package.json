@@ -1,6 +1,6 @@
 {
   "name": "@terivo-dev/theamy",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "private": false,
   "description": "control the platform theme from react native",
   "main": "lib/commonjs/index",
