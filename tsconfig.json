@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "@vonovak/react-native-theme-control": ["./src/index"]
+      "@terivo-dev/theamy": ["./src/index"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,

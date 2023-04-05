@@ -23,7 +23,7 @@ const project = (() => {
 module.exports = {
   dependencies: {
     // Help rn-cli find and autolink this library
-    '@vonovak/react-native-theme-control': {
+    '@terivo-dev/theamy': {
       root: __dirname,
     },
     expo: {

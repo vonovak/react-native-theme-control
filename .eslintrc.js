@@ -9,8 +9,9 @@ module.exports = {
   extends: [
     '@react-native-community',
     'prettier',
+    'plugin:jest/recommended',
     'plugin:@typescript-eslint/recommended',
-    'plugin:@typescript-eslint/recommended-requiring-type-checking',
+    // 'plugin:@typescript-eslint/recommended-requiring-type-checking',
   ],
   rules: {
     '@typescript-eslint/ban-ts-comment': 0,

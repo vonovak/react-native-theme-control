@@ -1,4 +1,5 @@
 #import "RNThemeControl.h"
+// TODO remove with RN 72
 #import "RCTConvert+RNThemeControl.h"
 #import <React/RCTAppearance.h>
 #import <React/RCTConvert.h>
@@ -87,8 +88,14 @@ RCT_REMAP_METHOD(setTheme,
     if (noStyleToSet) {
       return;
     }
-    UIApplication.sharedApplication.delegate.window.overrideUserInterfaceStyle = recoveredStyle;
-    NSString* override = [RNThemeControl getRCTAppearanceOverride:recoveredStyle];
+    [RNThemeControl forceTheme:recoveredStyle];
+  }
+}
+
++ (void) forceTheme: (UIUserInterfaceStyle) forcedStyle API_AVAILABLE(ios(12.0)){
+  if (@available(iOS 13.0, *)) {
+    UIApplication.sharedApplication.delegate.window.overrideUserInterfaceStyle = forcedStyle;
+    NSString* override = [RNThemeControl getRCTAppearanceOverride:forcedStyle];
     // TODO investigate more into why this call is needed
     RCTOverrideAppearancePreference(override);
   }

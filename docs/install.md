@@ -1,31 +1,56 @@
-
 # react-native-theme-control
 
 iOS 13 or newer is required for theming logic. However, the package builds with iOS 10 and newer.
 
-Version 2 supports RN 0.70 and newer. Version 2 can also be used with Expo >=47.
+Version 3 supports RN >= 0.71 and Expo 48.
+
+Version 2 supports RN 0.70 and Expo 47.
 
 For version 1, the minimum required RN version is 0.66.1. Version 1 can also be used with Expo >=45 and < 47.
 
 ## Installation
 
 ```bash
-yarn add @vonovak/react-native-theme-control
+yarn add @terivo-dev/theamy
 ```
 
 OR
 
 ```bash
-npm i @vonovak/react-native-theme-control
+npm i @terivo-dev/theamy
 ```
 
 Then, run `npx pod-install` and rebuild your iOS and Android projects.
 
 ### Expo
 
-add `@vonovak/react-native-theme-control` to the `plugins` entry in expo config file, e.g.:
+add `@terivo-dev/theamy` to the `plugins` entry in expo config file, e.g.:
 
-`"plugins": ["@vonovak/react-native-theme-control"]`
+`"plugins": ["@terivo-dev/theamy"]`
+
+if you want to force light / dark mode always, to resolve issues [like this](https://github.com/react-native-datetimepicker/datetimepicker/issues/746) then specify the theme like this:
+
+```
+"plugins": [
+  [
+    "@terivo-dev/theamy", {
+      "mode": "light"
+    }
+  ]
+]
+```
+
+The `mode` values are `'light' | 'dark' | 'userPreference'` ('userPreference') is default.
+
+Make sure that `userInterfaceStyle` in `expo` entry in expo config file is set to `automatic` or that it's not present at all.
+
+```json
+{
+  "expo": {
+    "userInterfaceStyle": "automatic"
+  }
+}
+```
 
 ## Native files setup:
 
@@ -35,7 +60,7 @@ There are manual installation steps that need to be performed:
 
 ### Android
 
-* in `MainApplication.java`:
+- in `MainApplication.java`:
 
 ```diff
 + import eu.reactnativetraining.ThemeControlModule;
@@ -52,11 +77,27 @@ public void onCreate() {
 }
 ```
 
+If you want to force dark / light theme always, use:
+
+`ThemeControlModule.Companion.forceTheme(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES);`
+
+or
+
+`ThemeControlModule.Companion.forceTheme(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO);`
+
 If you want, `androidxCoreVersion` can be set to the version of the androidx core you want to use.
 
 ### iOS
 
-* in `AppDelegate.m`
+## for RN >= 0.71
+
+The AppDelegate no longer contains the code that we need to modify to make theming work. Instead, we need to modify the `RCTAppDelegate.mm` file located in `node_modules/react-native/Libraries/AppDelegate`.
+
+Use the same modification as shown below for RN 0.70, and apply it to the node_modules file. Use tools such as `yarn patch` or `patch-package` to maintain the change.
+
+## for RN <= 0.70
+
+- in `AppDelegate.m`
 
 ```diff
 + #import "RNThemeControl.h"
@@ -74,6 +115,13 @@ If you want, `androidxCoreVersion` can be set to the version of the androidx cor
 }
 ```
 
+If you want to force dark / light theme always, [prefer editing the plist file](https://stackoverflow.com/a/58034262/2070942) or use:
+
+`[RNThemeControl forceTheme:UIUserInterfaceStyleDark];`
+
+or
+
+`[RNThemeControl forceTheme:UIUserInterfaceStyleLight];`
 
 ## Usage example
 
@@ -88,7 +136,7 @@ import {
   SystemBars,
   ThemePreference,
   useThemePreference,
-} from '@vonovak/react-native-theme-control';
+} from '@terivo-dev/theamy';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 
 export function SimpleScreen() {
@@ -154,7 +202,5 @@ For example, if you're using `FlatList`, you can add a `key` prop to it, and cha
 ```tsx
 const colorScheme = useColorScheme();
 
-<FlatList
-  key={colorScheme}
-/>
+<FlatList key={colorScheme} />;
 ```

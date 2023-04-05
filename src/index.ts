@@ -1,19 +1,18 @@
 import { getThemePreference, ThemeControlModule } from './NativeModule';
 import { useLayoutEffect, useState } from 'react';
-import type { EventEmitter as VendoredEmitter } from 'react-native';
-// @ts-ignore
+// TODO fix types
 import EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
 import type { SetThemeOptions, ThemePreference } from './types';
-
-// @ts-ignore
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-const themeSwitchEventEmitter: VendoredEmitter = new EventEmitter();
 
 export * from './SystemBars';
 export { NavigationBar } from './NavigationBar';
 export * from './types';
 export { getThemePreference } from './NativeModule';
+
 const eventType = 'setThemePreference';
+
+// @ts-expect-error
+const themeSwitchEventEmitter = new EventEmitter();
 
 export function setThemePreference(
   style: ThemePreference,

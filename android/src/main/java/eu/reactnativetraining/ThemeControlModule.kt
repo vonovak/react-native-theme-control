@@ -95,11 +95,7 @@ class ThemeControlModule(reactContext: ReactApplicationContext?) :
     )
     val editor = prefs.edit()
     @AppCompatDelegate.NightMode val mode = stringToMode(themeStyle)
-    if (mode == AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) {
-      editor.remove(THEME_ENTRY_KEY)
-    } else {
-      editor.putInt(THEME_ENTRY_KEY, mode)
-    }
+    editor.putInt(THEME_ENTRY_KEY, mode)
     editor.apply()
   }
 
@@ -125,12 +121,13 @@ class ThemeControlModule(reactContext: ReactApplicationContext?) :
       return mode
     }
 
+    fun forceTheme(forcedMode: Int) {
+      setMode(forcedMode)
+    }
+
     private fun setMode(mode: Int) {
       UiThreadUtil.assertOnUiThread()
-      if (mode == AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) {
-        // this is the default value, so do nothing
-        return
-      }
+      // setDefaultNightMode will be a noop if no change is needed
       AppCompatDelegate.setDefaultNightMode(mode)
     }
 

@@ -15,7 +15,7 @@ import {
   SystemBars,
   ThemePreference,
   useThemePreference,
-} from '@vonovak/react-native-theme-control';
+} from '@terivo-dev/theamy';
 import { MenuView } from '@react-native-menu/menu';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { useState } from 'react';
@@ -68,7 +68,6 @@ export function Screen({
         dividerColor={dividerColor}
         barStyle={'default'}
       />
-      {/*@ts-expect-error*/}
       <SegmentedControl
         style={{ width: '100%' }}
         values={values}
