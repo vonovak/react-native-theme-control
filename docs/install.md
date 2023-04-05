@@ -24,6 +24,9 @@ Then, run `npx pod-install` and rebuild your iOS and Android projects.
 
 ### Expo
 
+Note that there is a known issue when using the `expo-dev-client` package - it interferes with this package in development.
+However, production builds work fine. This issue will be fixed in the future.
+
 add `@terivo-dev/theamy` to the `plugins` entry in expo config file, e.g.:
 
 `"plugins": ["@terivo-dev/theamy"]`
