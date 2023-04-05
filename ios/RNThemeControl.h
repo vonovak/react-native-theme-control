@@ -6,6 +6,6 @@
 @property (nonatomic) NSInteger cachedStyle;
 
 + (void) recoverApplicationTheme;
-
++ (void) forceTheme: (NSInteger) forcedStyle;
 
 @end

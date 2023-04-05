@@ -51,18 +51,18 @@ RCT_REMAP_METHOD(setTheme,
                  withResolver:(RCTPromiseResolveBlock)resolve
                  withRejecter:(RCTPromiseRejectBlock)reject)
 {
-  
+
   if (@available(iOS 13.0, *)) {
     UIUserInterfaceStyle style = [RCTConvert UIUserInterfaceStyle:themeStyle];
-    
+
     BOOL shouldPersistTheme = options[@"persistTheme"] == nil || [options[@"persistTheme"] boolValue];
     if (shouldPersistTheme) {
       [self persistTheme: style];
     }
-    
+
     NSString* override = [RNThemeControl getRCTAppearanceOverride:style];
     self.cachedStyle = style;
-    
+
     dispatch_async(dispatch_get_main_queue(), ^{
       UIApplication.sharedApplication.delegate.window.overrideUserInterfaceStyle = style;
       RCTOverrideAppearancePreference(override);
@@ -92,7 +92,7 @@ RCT_REMAP_METHOD(setTheme,
   }
 }
 
-+ (void) forceTheme: (UIUserInterfaceStyle) forcedStyle API_AVAILABLE(ios(12.0)){
++ (void) forceTheme: (UIUserInterfaceStyle) forcedStyle API_AVAILABLE(ios(12.0)) {
   if (@available(iOS 13.0, *)) {
     UIApplication.sharedApplication.delegate.window.overrideUserInterfaceStyle = forcedStyle;
     NSString* override = [RNThemeControl getRCTAppearanceOverride:forcedStyle];

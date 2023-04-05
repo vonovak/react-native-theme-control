@@ -2,28 +2,12 @@
   "name": "@terivo-dev/theamy",
   "version": "3.0.1",
   "private": false,
+  "description": "theamy react native library",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/index.d.ts",
   "react-native": "src/index",
   "source": "src/index",
-  "files": [
-    "src",
-    "lib",
-    "android",
-    "ios",
-    "cpp",
-    "theamy.podspec",
-    "!lib/typescript/example",
-    "!android/build",
-    "!ios/build",
-    "!**/__tests__",
-    "!**/__fixtures__",
-    "!**/__mocks__",
-    "app.plugin.js",
-    "expo-module.config.json",
-    "plugin/build"
-  ],
   "scripts": {
     "test": "jest",
     "typescript": "tsc --noEmit",
@@ -42,6 +26,8 @@
     "ios",
     "android"
   ],
+  "author": "toluene0u",
+  "homepage": "https://www.npmjs.com/package/@terivo-dev/theamy",
   "license": "MPL-2.0",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
@@ -98,6 +84,23 @@
   "resolutions": {
     "@types/react": "18.0.27"
   },
+  "files": [
+    "src",
+    "lib",
+    "android",
+    "ios",
+    "cpp",
+    "theamy.podspec",
+    "!lib/typescript/example",
+    "!android/build",
+    "!ios/build",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
+    "app.plugin.js",
+    "expo-module.config.json",
+    "plugin/build"
+  ],
   "jest": {
     "preset": "react-native",
     "modulePathIgnorePatterns": [
