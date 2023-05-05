@@ -95,6 +95,9 @@ RCT_REMAP_METHOD(setTheme,
     for (UIWindow *window in windows) {
       window.overrideUserInterfaceStyle = forcedStyle;
     }
+    NSString* override = [RNThemeControl getRCTAppearanceOverride:forcedStyle];
+    // TODO investigate more into why this call is needed
+    RCTOverrideAppearancePreference(override);
   }
 }
 
