@@ -24,14 +24,11 @@ Then, run `npx pod-install` and rebuild your iOS and Android projects.
 
 ### Expo
 
-Note that there is a known issue when using the `expo-dev-client` package - it interferes with this package in development.
-However, production builds work fine. This issue will be fixed in the future.
-
 add `@terivo-dev/theamy` to the `plugins` entry in expo config file, e.g.:
 
 `"plugins": ["@terivo-dev/theamy"]`
 
-if you want to force light / dark mode always, to resolve issues [like this](https://github.com/react-native-datetimepicker/datetimepicker/issues/746) then specify the theme like this:
+If you want to force light / dark mode always, to resolve issues [like this](https://github.com/react-native-datetimepicker/datetimepicker/issues/746) then specify the theme like this:
 
 ```
 "plugins": [
@@ -45,7 +42,7 @@ if you want to force light / dark mode always, to resolve issues [like this](htt
 
 The `mode` values are `'light' | 'dark' | 'userPreference'` ('userPreference') is default.
 
-Make sure that `userInterfaceStyle` in `expo` entry in expo config file is set to `automatic` or that it's not present at all.
+Make sure that `userInterfaceStyle` in `expo` entry in expo config file is set to `automatic`.
 
 ```json
 {
