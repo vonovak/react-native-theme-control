@@ -6,7 +6,7 @@ import {
   withDangerousMod,
   withMainActivity,
 } from 'expo/config-plugins';
-import { promises } from 'fs';
+import { promises, readFileSync } from 'fs';
 import { sync as globSync } from 'glob';
 import * as path from 'path';
 const { writeFile } = promises;
@@ -53,10 +53,28 @@ const addAppDelegateImport = (src: string) => {
   return mergeContents({
     tag: moduleName + '-import',
     src,
-    newSrc: '#import "RNThemeControl.h"',
+    newSrc: `#if __has_include(<RNThemeControl.h>)
+    #import <RNThemeControl.h>
+#else
+    #import "RNThemeControl.h"
+#endif`,
     anchor: /#import "RCTAppDelegate.h"/,
     offset: 1,
     comment: '//',
+  });
+};
+const addHeaderSearchPath = (src: string) => {
+  const theamyLocation = path.dirname(
+    require.resolve(`${moduleName}/package.json`),
+  );
+
+  return mergeContents({
+    tag: moduleName + '-header',
+    src,
+    newSrc: `"${theamyLocation}/ios",`,
+    anchor: /header_search_paths = \[/,
+    offset: 1,
+    comment: '#',
   });
 };
 
@@ -87,24 +105,33 @@ const withIosPlugin: ThemeConfigPlugin = (config, options) => {
     async (config) => {
       const delegatePath = getAppDelegateFilePath(
         config.modRequest.projectRoot,
+        'RCTAppDelegate.@(m|mm)',
       );
       const contents = Paths.getFileInfo(delegatePath).contents;
       const withImport = addAppDelegateImport(contents).contents;
       const withThemeRecovered = addThemeRecovery(withImport, options).contents;
       await writeFile(delegatePath, withThemeRecovered);
+
+      const podspecPath = getAppDelegateFilePath(
+        config.modRequest.projectRoot,
+        'React-RCTAppDelegate.podspec',
+      );
+      const podspecContent = readFileSync(podspecPath, 'utf8');
+      const withHeaderSearchPath = addHeaderSearchPath(podspecContent).contents;
+      await writeFile(podspecPath, withHeaderSearchPath);
       return config;
     },
   ]);
 };
 
-function getAppDelegateFilePath(projectRoot: string): string {
+function getAppDelegateFilePath(projectRoot: string, fileName: string): string {
   const rnLocation = path.dirname(require.resolve('react-native/package.json'));
   if (!rnLocation) {
     throw new Error(
       `${moduleName}: Could not locate React Native from root: "${projectRoot}"`,
     );
   }
-  const [using, ...extra] = globSync('RCTAppDelegate.@(m|mm)', {
+  const [using, ...extra] = globSync(fileName, {
     absolute: true,
     cwd: path.join(rnLocation, 'Libraries/AppDelegate'),
     ignore: [],
@@ -112,14 +139,14 @@ function getAppDelegateFilePath(projectRoot: string): string {
 
   if (!using) {
     throw new Error(
-      `${moduleName}: Could not locate a valid RCTAppDelegate from root: "${projectRoot}"`,
+      `${moduleName}: Could not locate a valid ${fileName} from root: "${projectRoot}"`,
     );
   }
 
   if (extra.length > 0) {
     console.warn(`${moduleName}: multiple candidates for RN path`, {
       tag: 'RCTAppDelegate',
-      fileName: 'RCTAppDelegate',
+      fileName,
       projectRoot,
       using,
       extra,

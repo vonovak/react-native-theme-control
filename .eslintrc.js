@@ -32,5 +32,6 @@ module.exports = {
     'app.plugin.js',
     '*.config.js',
     'example/*',
+    'theme-ex/*',
   ],
 };

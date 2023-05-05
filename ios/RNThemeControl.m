@@ -44,7 +44,6 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getThemePreference)
   return @"auto";
 }
 
-
 RCT_REMAP_METHOD(setTheme,
                  setThemeFrom:(nonnull NSString*) themeStyle
                  withOptions:(nonnull NSDictionary*) options
@@ -60,12 +59,10 @@ RCT_REMAP_METHOD(setTheme,
       [self persistTheme: style];
     }
 
-    NSString* override = [RNThemeControl getRCTAppearanceOverride:style];
     self.cachedStyle = style;
 
     dispatch_async(dispatch_get_main_queue(), ^{
-      UIApplication.sharedApplication.delegate.window.overrideUserInterfaceStyle = style;
-      RCTOverrideAppearancePreference(override);
+      [RNThemeControl forceTheme:style];
     });
   }
   resolve([NSNull null]);
@@ -92,12 +89,12 @@ RCT_REMAP_METHOD(setTheme,
   }
 }
 
-+ (void) forceTheme: (UIUserInterfaceStyle) forcedStyle API_AVAILABLE(ios(12.0)) {
++ (void) forceTheme: (NSInteger) forcedStyle {
   if (@available(iOS 13.0, *)) {
-    UIApplication.sharedApplication.delegate.window.overrideUserInterfaceStyle = forcedStyle;
-    NSString* override = [RNThemeControl getRCTAppearanceOverride:forcedStyle];
-    // TODO investigate more into why this call is needed
-    RCTOverrideAppearancePreference(override);
+    NSArray<UIWindow *> *windows = RCTSharedApplication().windows;
+    for (UIWindow *window in windows) {
+      window.overrideUserInterfaceStyle = forcedStyle;
+    }
   }
 }
 
