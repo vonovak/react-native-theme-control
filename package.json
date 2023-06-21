@@ -13,7 +13,7 @@
     "typescript": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "prepare": "bob build && yarn run build:plugin",
-    "release": "bob build && npx semantic-release",
+    "release": "yarn prepare && npx semantic-release",
     "android": "npx react-native run-android",
     "start": "npx patch-package && cd example && npx react-native start",
     "ios": "npx react-native run-ios",
@@ -26,7 +26,7 @@
     "ios",
     "android"
   ],
-  "repository": "https://github.com/vonovak-org/react-native-theme-control",
+  "repository": "https://github.com/vonovak/react-native-theme-control",
   "author": "vonovak <vonovak@gmail.com> (https://github.com/vonovak)",
   "homepage": "https://www.npmjs.com/package/@vonovak/react-native-theme-control",
   "license": "MPL-2.0",

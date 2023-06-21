@@ -3,7 +3,9 @@
 Control the native platform theme from React Native.
 
 ✅ Control theme of React Native Views as well as native UI controls (tested with alerts, native menus and date pickers on both Android and iOS)
+
 ✅ Supports Expo via a config plugin
+
 ✅ New architecture supported
 
 Additionally, provides functionality to control the appearance (background and border color, light / dark buttons) of the Android navbar.
