@@ -1,6 +1,6 @@
 {
   "name": "@vonovak/react-native-theme-control",
-  "version": "3.1.1",
+  "version": "3.2.0",
   "private": false,
   "description": "control the platform theme from react native",
   "main": "lib/commonjs/index",
