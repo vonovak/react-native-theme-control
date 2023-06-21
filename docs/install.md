@@ -1,4 +1,4 @@
-# react-native-theme-control
+# @vonovak/react-native-theme-control
 
 iOS 13 or newer is required for theming logic. However, the package builds with iOS 10 and newer.
 
