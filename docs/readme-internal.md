@@ -1,4 +1,4 @@
-# @terivo-dev/theamy
+# @vonovak/react-native-theme-control
 
 ## Table of contents
 

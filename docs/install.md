@@ -11,38 +11,20 @@ For version 1, the minimum required RN version is 0.66.1. Version 1 can also be 
 ## Installation
 
 ```bash
-yarn add @terivo-dev/theamy
+yarn add @vonovak/react-native-theme-control
 ```
 
 OR
 
 ```bash
-npm i @terivo-dev/theamy
+npm i @vonovak/react-native-theme-control
 ```
 
 Then, run `npx pod-install` and rebuild your iOS and Android projects.
 
 ### Expo
 
-add `@terivo-dev/theamy` to the `plugins` entry in expo config file, e.g.:
-
-`"plugins": ["@terivo-dev/theamy"]`
-
-If you want to force light / dark mode always, to resolve issues [like this](https://github.com/react-native-datetimepicker/datetimepicker/issues/746) then specify the theme like this:
-
-```
-"plugins": [
-  [
-    "@terivo-dev/theamy", {
-      "mode": "light"
-    }
-  ]
-]
-```
-
-The `mode` values are `'light' | 'dark' | 'userPreference'` ('userPreference') is default.
-
-Make sure that `userInterfaceStyle` in `expo` entry in expo config file is set to `automatic`.
+First, make sure that `userInterfaceStyle` in `expo` entry in expo config file is set to `automatic`.
 
 ```json
 {
@@ -52,11 +34,29 @@ Make sure that `userInterfaceStyle` in `expo` entry in expo config file is set t
 }
 ```
 
+then, add `@vonovak/react-native-theme-control` to the `plugins` entry in expo config file, e.g.:
+
+`"plugins": ["@vonovak/react-native-theme-control"]`
+
+If you want to force light / dark mode always, to resolve issues [like this](https://github.com/react-native-datetimepicker/datetimepicker/issues/746) then specify the theme like this:
+
+```
+"plugins": [
+  [
+    "@vonovak/react-native-theme-control", {
+      "mode": "light"
+    }
+  ]
+]
+```
+
+The `mode` values are `'light' | 'dark' | 'userPreference'` ('userPreference') is default.
+
 ## Native files setup:
 
 There are manual installation steps that need to be performed:
 
-**Do not do this if you're using the expo config plugin!**
+**Do not do this if you're using the Expo config plugin!**
 
 ### Android
 
@@ -136,7 +136,7 @@ import {
   SystemBars,
   ThemePreference,
   useThemePreference,
-} from '@terivo-dev/theamy';
+} from '@vonovak/react-native-theme-control';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 
 export function SimpleScreen() {
@@ -192,6 +192,8 @@ Make sure that inside of the `AndroidManifest.xml` file, the `android:configChan
 ```
 android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
 ```
+
+Note, however, that restarting the activity might be necessary for some theme-related changes to occur, for example for [PlatformColor](https://reactnative.dev/docs/platformcolor) changes to take effect.
 
 #### Android scroll bar's color is not changing
 

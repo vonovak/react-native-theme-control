@@ -1,19 +1,34 @@
 package eu.reactnativetraining
 
-import com.facebook.react.ReactPackage
+import com.facebook.react.TurboReactPackage
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.NativeModule
-import com.facebook.react.uimanager.ViewManager
-import java.util.ArrayList
+import com.facebook.react.module.model.ReactModuleInfo
+import com.facebook.react.module.model.ReactModuleInfoProvider
 
-class ThemeControlPackage : ReactPackage {
-  override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
-    val modules: MutableList<NativeModule> = ArrayList()
-    modules.add(ThemeControlModule(reactContext))
-    return modules
+class ThemeControlPackage : TurboReactPackage() {
+
+  override fun getModule(name: String?, ctx: ReactApplicationContext?): NativeModule? {
+    return if (ThemeControlModule.NAME == name) {
+      ThemeControlModule(ctx)
+    } else {
+      null
+    }
   }
 
-  override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
-    return emptyList()
+  override fun getReactModuleInfoProvider(): ReactModuleInfoProvider = ReactModuleInfoProvider {
+    val isTurboModule: Boolean = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
+    val moduleName = ThemeControlModule.NAME
+    mapOf(
+      moduleName to ReactModuleInfo(
+        moduleName,
+        moduleName,
+        false, // canOverrideExistingModule
+        false, // needsEagerInit
+        false, // hasConstants
+        false, // isCxxModule
+        isTurboModule // isTurboModule
+      )
+    )
   }
 }

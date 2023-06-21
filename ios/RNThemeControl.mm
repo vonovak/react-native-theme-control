@@ -35,7 +35,7 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getThemePreference)
 {
   if (@available(iOS 13.0, *)) {
-    UIUserInterfaceStyle current = self.cachedStyle;
+    UIUserInterfaceStyle current = (UIUserInterfaceStyle) self.cachedStyle;
     NSString* result = [RNThemeControl getRCTAppearanceOverride:current];
     if (result) {
       return result;
@@ -44,11 +44,10 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getThemePreference)
   return @"auto";
 }
 
-RCT_REMAP_METHOD(setTheme,
-                 setThemeFrom:(nonnull NSString*) themeStyle
-                 withOptions:(nonnull NSDictionary*) options
-                 withResolver:(RCTPromiseResolveBlock)resolve
-                 withRejecter:(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(setTheme:(NSString*) themeStyle
+                  options:(NSDictionary*) options
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
 
   if (@available(iOS 13.0, *)) {
@@ -80,7 +79,8 @@ RCT_REMAP_METHOD(setTheme,
 + (void) recoverApplicationTheme {
   if (@available(iOS 13.0, *)) {
     NSUserDefaults* defaults = NSUserDefaults.standardUserDefaults;
-    UIUserInterfaceStyle recoveredStyle = [defaults integerForKey:THEME_ENTRY_KEY];
+    NSInteger recoveredInt = [defaults integerForKey:THEME_ENTRY_KEY];
+    UIUserInterfaceStyle recoveredStyle = [RNThemeControl intToUIUserInterfaceStyle:recoveredInt];
     BOOL noStyleToSet = recoveredStyle == 0;
     if (noStyleToSet) {
       return;
@@ -91,13 +91,14 @@ RCT_REMAP_METHOD(setTheme,
 
 + (void) forceTheme: (NSInteger) forcedStyle {
   if (@available(iOS 13.0, *)) {
+    UIUserInterfaceStyle casted = [RNThemeControl intToUIUserInterfaceStyle:forcedStyle];
     NSArray<UIWindow *> *windows = RCTSharedApplication().windows;
     for (UIWindow *window in windows) {
-      window.overrideUserInterfaceStyle = forcedStyle;
+      window.overrideUserInterfaceStyle = casted;
     }
-    NSString* override = [RNThemeControl getRCTAppearanceOverride:forcedStyle];
+    NSString* appearanceOverride = [RNThemeControl getRCTAppearanceOverride:casted];
     // TODO investigate more into why this call is needed
-    RCTOverrideAppearancePreference(override);
+    RCTOverrideAppearancePreference(appearanceOverride);
   }
 }
 
@@ -109,5 +110,28 @@ RCT_REMAP_METHOD(setTheme,
   NSString* forcedStyle = style == UIUserInterfaceStyleDark ? @"dark" : @"light";
   return forcedStyle;
 }
+
++ (UIUserInterfaceStyle) intToUIUserInterfaceStyle: (NSInteger) style  API_AVAILABLE(ios(12.0)){
+    switch(style) {
+        case 1:
+            return UIUserInterfaceStyleLight;
+        case 2:
+            return UIUserInterfaceStyleDark;
+        default:
+            return UIUserInterfaceStyleUnspecified;
+    }
+}
+
+#ifdef RCT_NEW_ARCH_ENABLED
+- (void)setNavbarAppearance:(JS::NativeThemeControl::NativeSetNavbarAppearanceParams &)params resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+  // noop - android only
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+   (const facebook::react::ObjCTurboModule::InitParams &)params
+{
+   return std::make_shared<facebook::react::NativeThemeControlSpecJSI>(params);
+}
+#endif
 
 @end

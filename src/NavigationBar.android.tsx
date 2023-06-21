@@ -9,12 +9,12 @@ import type {
   NavbarAppearanceParams,
   NavigationBarProps as NavigationBarProps,
 } from './types';
+
+import { useEffect } from 'react';
 import {
-  getThemePreference,
   SetNavbarAppearanceParams,
   ThemeControlModule,
-} from './NativeModule';
-import { useEffect } from 'react';
+} from './NativeThemeControl';
 
 let delayedUpdateID: ReturnType<typeof setImmediate> | null = null;
 let currentProps: NavigationBarProps | null = null;
@@ -22,9 +22,9 @@ const propsStack: NavigationBarProps[] = [];
 
 const getBarStyleParam = (
   barStyle: NavigationBarProps['barStyle'],
-  colorScheme: ColorSchemeName
+  colorScheme: ColorSchemeName,
 ): SetNavbarAppearanceParams['barStyle'] => {
-  const preference = colorScheme || getThemePreference();
+  const preference = colorScheme || ThemeControlModule.getThemePreference();
   if (!barStyle || barStyle === 'default') {
     return preference === 'dark' ? 'light-content' : 'dark-content';
   }
@@ -33,7 +33,7 @@ const getBarStyleParam = (
 
 const didPropsChange = (
   oldProps: NavigationBarProps | null,
-  lastEntry: NavigationBarProps
+  lastEntry: NavigationBarProps,
 ) => {
   return (
     oldProps?.dividerColor !== lastEntry.dividerColor ||
@@ -58,7 +58,7 @@ function popStackEntry(entry: NavigationBarProps): void {
 
 function replaceStackEntry(
   entry: NavigationBarProps,
-  newEntry: NavigationBarProps
+  newEntry: NavigationBarProps,
 ): NavigationBarProps {
   const index = propsStack.indexOf(entry);
   if (index !== -1) {
@@ -82,7 +82,7 @@ function updatePropsStack() {
       if (didPropsChange(currentProps, lastEntry)) {
         const barStyle = getBarStyleParam(
           lastEntry.barStyle,
-          Appearance.getColorScheme()
+          Appearance.getColorScheme(),
         );
 
         const params = {

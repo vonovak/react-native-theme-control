@@ -15,9 +15,10 @@ import {
   SystemBars,
   ThemePreference,
   useThemePreference,
-} from '@terivo-dev/theamy';
+} from '@vonovak/react-native-theme-control';
 import { MenuView } from '@react-native-menu/menu';
-import SegmentedControl from '@react-native-segmented-control/segmented-control';
+// @ts-ignore
+import SegmentedControl from '@react-native-segmented-control/segmented-control/js/SegmentedControl.js';
 import { useState } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
@@ -40,7 +41,7 @@ export function Screen({
   const isDarkMode = colorScheme === 'dark';
   const [persistTheme, togglePersistTheme] = React.useReducer(
     (state: boolean) => !state,
-    true
+    true,
   );
   const themePreference = useThemePreference();
 
@@ -52,7 +53,6 @@ export function Screen({
   const changeAppearance = (newAppearance: string) => {
     setThemePreference(newAppearance as ThemePreference, { persistTheme });
   };
-
 
   return (
     <View
@@ -72,7 +72,7 @@ export function Screen({
         style={{ width: '100%' }}
         values={values}
         selectedIndex={values.indexOf(themePreference)}
-        onChange={({ nativeEvent }: {nativeEvent: any}) => {
+        onChange={({ nativeEvent }: { nativeEvent: any }) => {
           changeAppearance(nativeEvent.value);
         }}
       />
@@ -128,7 +128,9 @@ export function Screen({
       {Platform.OS === 'android' && (
         <Button
           onPress={() => {
-            setThemePreference(nextTheme, { restartActivity: true });
+            setThemePreference(nextTheme, {
+              restartActivity: true,
+            });
           }}
           title="toggle theme with android activity restart"
         />
@@ -140,7 +142,7 @@ export function Screen({
           is24Hour={true}
           onChange={undefined}
           style={{ width: '100%', height: 200 }}
-          display={"spinner"}
+          display={'spinner'}
         />
       )}
     </View>
@@ -149,8 +151,8 @@ export function Screen({
 
 const styles = StyleSheet.create({
   container: {
+    rowGap: 20,
     flexGrow: 1,
-    flexShrink: 1,
     alignItems: 'center',
     justifyContent: 'space-evenly',
   },

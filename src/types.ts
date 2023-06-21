@@ -12,8 +12,3 @@ export type NavbarAppearanceParams = {
 };
 
 export type ThemePreference = 'dark' | 'light' | 'auto';
-
-export type SetThemeOptions = {
-  persistTheme?: boolean;
-  restartActivity?: boolean;
-};

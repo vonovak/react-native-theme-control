@@ -11,20 +11,11 @@ module.exports = {
     'prettier',
     'plugin:jest/recommended',
     'plugin:@typescript-eslint/recommended',
-    // 'plugin:@typescript-eslint/recommended-requiring-type-checking',
+    'plugin:@typescript-eslint/recommended-requiring-type-checking',
   ],
   rules: {
     '@typescript-eslint/ban-ts-comment': 0,
-    'prettier/prettier': [
-      'error',
-      {
-        quoteProps: 'consistent',
-        singleQuote: true,
-        tabWidth: 2,
-        trailingComma: 'es5',
-        useTabs: false,
-      },
-    ],
+    'prettier/prettier': ['error'],
   },
   ignorePatterns: [
     'lib/*',

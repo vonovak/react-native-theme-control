@@ -6,8 +6,9 @@ import {
   SystemBars,
   ThemePreference,
   useThemePreference,
-} from '@terivo-dev/theamy';
-import SegmentedControl from '@react-native-segmented-control/segmented-control';
+} from '@vonovak/react-native-theme-control';
+// @ts-ignore
+import SegmentedControl from '@react-native-segmented-control/segmented-control/js/SegmentedControl.js';
 
 export function SimpleScreen() {
   const colorScheme = useColorScheme();
@@ -36,7 +37,6 @@ export function SimpleScreen() {
         backgroundColor={barsBackground}
         dividerColor={dividerColor}
       />
-      {/*@ts-expect-error*/}
       <SegmentedControl
         style={{ width: '100%' }}
         values={values}

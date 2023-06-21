@@ -1,13 +1,11 @@
 {
   "compilerOptions": {
-    "baseUrl": "./",
     "paths": {
-      "@terivo-dev/theamy": ["./src/index"]
+      "@vonovak/react-native-theme-control": ["./src/index"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "esModuleInterop": true,
-    "importsNotUsedAsValues": "error",
     "forceConsistentCasingInFileNames": true,
     "jsx": "react",
     "lib": ["esnext"],
@@ -20,12 +18,14 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "resolveJsonModule": true,
+    "noUncheckedIndexedAccess": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "esnext",
+    "target": "esnext"
   },
   "include": [
     "src",
+    "example",
     ".eslintrc.js"
   ],
 }

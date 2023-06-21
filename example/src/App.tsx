@@ -75,7 +75,10 @@ const ScreenTwo = ({
   return (
     <ScrollView
       automaticallyAdjustKeyboardInsets={true}
-      contentContainerStyle={{ flexGrow: 1, backgroundColor: bgColor }}
+      contentContainerStyle={{
+        flexGrow: 1,
+        backgroundColor: bgColor,
+      }}
     >
       <SafeAreaView edges={['bottom']} style={{ flex: 1 }}>
         <Screen

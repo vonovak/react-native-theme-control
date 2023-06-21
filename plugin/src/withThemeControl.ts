@@ -11,7 +11,7 @@ import { sync as globSync } from 'glob';
 import * as path from 'path';
 const { writeFile } = promises;
 
-const moduleName = '@terivo-dev/theamy';
+const moduleName = '@vonovak/react-native-theme-control';
 const themeRecoveryTag = '-theme-recovery';
 
 type Options = {
@@ -64,14 +64,14 @@ const addAppDelegateImport = (src: string) => {
   });
 };
 const addHeaderSearchPath = (src: string) => {
-  const theamyLocation = path.dirname(
+  const pkgLocation = path.dirname(
     require.resolve(`${moduleName}/package.json`),
   );
 
   return mergeContents({
     tag: moduleName + '-header',
     src,
-    newSrc: `"${theamyLocation}/ios",`,
+    newSrc: `"${pkgLocation}/ios",`,
     anchor: /header_search_paths = \[/,
     offset: 1,
     comment: '#',
@@ -157,9 +157,9 @@ function getAppDelegateFilePath(projectRoot: string, fileName: string): string {
 }
 
 /**
- * Apply theamy configuration for Expo projects.
+ * Apply react-native-theme-control configuration for Expo projects.
  */
-const withTheamy: ThemeConfigPlugin = (config, options = {}) => {
+const withThemeControl: ThemeConfigPlugin = (config, options = {}) => {
   if (
     options.mode &&
     !['userPreference', 'light', 'dark'].includes(options.mode)
@@ -173,4 +173,4 @@ const withTheamy: ThemeConfigPlugin = (config, options = {}) => {
   return config;
 };
 
-export default withTheamy;
+export default withThemeControl;

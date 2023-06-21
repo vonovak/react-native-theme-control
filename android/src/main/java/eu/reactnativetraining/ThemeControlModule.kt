@@ -1,35 +1,32 @@
 package eu.reactnativetraining
 
-import com.facebook.react.module.annotations.ReactModule
-import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
-import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.bridge.Promise
-import com.facebook.react.bridge.UiThreadUtil
 import android.content.Context
-import com.facebook.react.common.ReactConstants
 import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.WindowInsetsControllerCompat
 import com.facebook.common.logging.FLog
+import com.facebook.react.bridge.Promise
+import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.UiThreadUtil
+import com.facebook.react.common.ReactConstants
+import com.facebook.react.module.annotations.ReactModule
 
 @ReactModule(name = ThemeControlModule.NAME)
 class ThemeControlModule(reactContext: ReactApplicationContext?) :
-  ReactContextBaseJavaModule(reactContext) {
+  NativeThemeControlSpec(reactContext) {
   override fun getName(): String {
     return NAME
   }
 
-  @get:ReactMethod(isBlockingSynchronousMethod = true)
-  val themePreference: String
-    get() {
-      val preference = AppCompatDelegate.getDefaultNightMode()
-      return modeToString(preference)
-    }
+  override fun getThemePreference(): String {
+    val preference = AppCompatDelegate.getDefaultNightMode()
+    return modeToString(preference)
+  }
 
   @ReactMethod
-  fun setNavbarAppearance(params: ReadableMap, promise: Promise) {
+  override fun setNavbarAppearance(params: ReadableMap, promise: Promise) {
     val bgColor =
       if (params.isNull("backgroundColor")) null else params.getInt("backgroundColor")
     val dividerColor =
@@ -63,7 +60,7 @@ class ThemeControlModule(reactContext: ReactApplicationContext?) :
   }
 
   @ReactMethod
-  fun setTheme(themeStyle: String, opts: ReadableMap, promise: Promise) {
+  override fun setTheme(themeStyle: String, opts: ReadableMap, promise: Promise) {
     val persistTheme = !opts.hasKey("persistTheme") || opts.getBoolean("persistTheme")
     val restartActivity = opts.hasKey("restartActivity") && opts.getBoolean("restartActivity")
     if (persistTheme || restartActivity) {
@@ -95,7 +92,11 @@ class ThemeControlModule(reactContext: ReactApplicationContext?) :
     )
     val editor = prefs.edit()
     @AppCompatDelegate.NightMode val mode = stringToMode(themeStyle)
-    editor.putInt(THEME_ENTRY_KEY, mode)
+    if (mode == AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) {
+      editor.remove(THEME_ENTRY_KEY)
+    } else {
+      editor.putInt(THEME_ENTRY_KEY, mode)
+    }
     editor.apply()
   }
 
@@ -105,14 +106,13 @@ class ThemeControlModule(reactContext: ReactApplicationContext?) :
     private var cachedMode: Int? = null
 
     fun getThemeMode(ctx: Context): Int {
-      if (cachedMode != null) {
-        return cachedMode!!
+      return cachedMode ?: let {
+        val prefs = ctx.getSharedPreferences(NAME, Context.MODE_PRIVATE)
+        @AppCompatDelegate.NightMode
+        val mode = prefs.getInt(THEME_ENTRY_KEY, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        cachedMode = mode
+        return mode
       }
-      val prefs = ctx.getSharedPreferences(NAME, Context.MODE_PRIVATE)
-      @AppCompatDelegate.NightMode val mode =
-        prefs.getInt(THEME_ENTRY_KEY, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-      cachedMode = mode
-      return mode
     }
 
     fun recoverApplicationTheme(ctx: Context): Int {
@@ -141,7 +141,6 @@ class ThemeControlModule(reactContext: ReactApplicationContext?) :
     }
 
     fun modeToString(@AppCompatDelegate.NightMode mode: Int): String {
-      // TODO more cases might need to be implemented
       return when (mode) {
         AppCompatDelegate.MODE_NIGHT_YES -> "dark"
         AppCompatDelegate.MODE_NIGHT_NO -> "light"

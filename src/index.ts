@@ -1,26 +1,28 @@
-import { getThemePreference, ThemeControlModule } from './NativeModule';
 import { useLayoutEffect, useState } from 'react';
 // TODO fix types
 import EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
-import type { SetThemeOptions, ThemePreference } from './types';
+import { EventEmitter as EventEmitterType } from 'react-native';
+import { SetThemeOptions, ThemeControlModule } from './NativeThemeControl';
+import { ThemePreference } from './types';
 
 export * from './SystemBars';
 export { NavigationBar } from './NavigationBar';
 export * from './types';
-export { getThemePreference } from './NativeModule';
 
-const eventType = 'setThemePreference';
+const eventName = 'setThemePreference';
 
 // @ts-expect-error
-const themeSwitchEventEmitter = new EventEmitter();
+const themeSwitchEventEmitter = new EventEmitter() as EventEmitterType;
 
 export function setThemePreference(
   style: ThemePreference,
-  options: SetThemeOptions = {}
+  options: SetThemeOptions = {},
 ): void {
-  themeSwitchEventEmitter.emit(eventType, style);
+  themeSwitchEventEmitter.emit(eventName, style);
   ThemeControlModule.setTheme(style, options).catch(console.error);
 }
+
+export const getThemePreference = ThemeControlModule.getThemePreference;
 
 export const useThemePreference = (): ThemePreference => {
   const [themePreference, setPreference] =
@@ -28,13 +30,11 @@ export const useThemePreference = (): ThemePreference => {
 
   useLayoutEffect(() => {
     const subscription = themeSwitchEventEmitter.addListener(
-      eventType,
-      setPreference
+      eventName,
+      setPreference,
     );
 
-    return () => {
-      subscription.remove();
-    };
+    return () => subscription.remove();
   }, []);
 
   return themePreference;

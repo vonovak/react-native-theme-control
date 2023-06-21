@@ -1,5 +1,6 @@
 #import <React/RCTConvert.h>
 #import "RNThemeControl.h"
+// TODO remove for RN 72
 
 @interface RCTConvert(RNThemeControl)
 
