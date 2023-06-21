@@ -15,6 +15,9 @@ module.exports = {
   ],
   rules: {
     '@typescript-eslint/ban-ts-comment': 0,
+    '@typescript-eslint/no-unsafe-assignment': 0,
+    '@typescript-eslint/no-unsafe-call': 0,
+    '@typescript-eslint/no-unsafe-member-access': 0,
     'prettier/prettier': ['error'],
   },
   ignorePatterns: [

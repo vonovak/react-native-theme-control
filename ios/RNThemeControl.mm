@@ -1,6 +1,4 @@
 #import "RNThemeControl.h"
-// TODO remove with RN 72
-#import "RCTConvert+RNThemeControl.h"
 #import <React/RCTAppearance.h>
 #import <React/RCTConvert.h>
 
@@ -51,7 +49,8 @@ RCT_EXPORT_METHOD(setTheme:(NSString*) themeStyle
 {
 
   if (@available(iOS 13.0, *)) {
-    UIUserInterfaceStyle style = [RCTConvert UIUserInterfaceStyle:themeStyle];
+    NSString* patchedThemeStyle = [@"auto" isEqualToString:themeStyle] ? @"unspecified" : themeStyle;
+    UIUserInterfaceStyle style = [RCTConvert UIUserInterfaceStyle:patchedThemeStyle];
 
     BOOL shouldPersistTheme = options[@"persistTheme"] == nil || [options[@"persistTheme"] boolValue];
     if (shouldPersistTheme) {
