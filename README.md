@@ -12,7 +12,7 @@ Control the native platform theme from React Native.
 
 Additionally, provides functionality to control the appearance (background and border color, light / dark buttons) of the Android navbar.
 
-The package is tested with RN >= 0.66.1 (last tested with RN 71, Expo 48).
+The package is tested with RN >= 0.66.1 (last tested with RN 72, Expo 48).
 
 ## Motivation
 
