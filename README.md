@@ -2,7 +2,9 @@
 
 Control the native platform theme from React Native.
 
-✅ Control theme of React Native Views as well as native UI controls (tested with alerts, native menus and date pickers on both Android and iOS)
+✅ Control theme of RN Views, as well as native UI controls (alerts, native menus, date pickers... on both Android and iOS)
+
+✅ Recover the theme upon app startup
 
 ✅ Supports Expo via a config plugin
 

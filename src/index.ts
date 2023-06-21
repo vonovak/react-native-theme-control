@@ -1,7 +1,5 @@
 import { useLayoutEffect, useState } from 'react';
-// TODO fix types
 import EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
-import { EventEmitter as EventEmitterType } from 'react-native';
 import { SetThemeOptions, ThemeControlModule } from './NativeThemeControl';
 import { ThemePreference } from './types';
 
@@ -11,8 +9,7 @@ export * from './types';
 
 const eventName = 'setThemePreference';
 
-// @ts-expect-error
-const themeSwitchEventEmitter = new EventEmitter() as EventEmitterType;
+const themeSwitchEventEmitter = new EventEmitter();
 
 export function setThemePreference(
   style: ThemePreference,
@@ -34,7 +31,9 @@ export const useThemePreference = (): ThemePreference => {
       setPreference,
     );
 
-    return () => subscription.remove();
+    return () => {
+      subscription.remove();
+    };
   }, []);
 
   return themePreference;
