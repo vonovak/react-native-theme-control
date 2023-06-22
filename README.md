@@ -26,17 +26,6 @@ You might follow one of the many blog posts for theming React Native apps such a
 
 This package provides a solution to change the application theme so that both react native and native components use the same theme - see the [relevant part of the video](https://youtu.be/NNYQj_T0Sf8?t=73).
 
-
-## This Package Was Sponsorware 💰💰💰
-
-This package was only available to my GitHub Sponsors: TODO tweet
-
-Enjoy, and thanks for the support! ❤️
-
-Sponsorware idea is not mine, learn more about **Sponsorware** at [github.com/sponsorware/docs](https://github.com/sponsorware/docs) 💰.
-
-I simply adopted it because making open source is a lot of fun but is not sustainable without compensation.
-
 ## Documentation
 
 Installation and usage instructions can be found [here](./docs/install.md).
@@ -44,6 +33,16 @@ Installation and usage instructions can be found [here](./docs/install.md).
 The library api is documented in detail [here](./docs/readme-internal.md).
 
 More usage examples can be found [in the example project](./example).
+
+## This Package Was Sponsorware 💰💰💰
+
+This package was only available to my GitHub Sponsors, but is now publicly available [tweet](https://twitter.com/vonovak/status/1671786982136004609).
+
+Enjoy, and thanks for the support! ❤️
+
+Sponsorware idea is not mine, learn more about **Sponsorware** at [github.com/sponsorware/docs](https://github.com/sponsorware/docs) 💰.
+
+I simply adopted it because making open source is a lot of fun but is not sustainable without compensation.
 
 ### Credits
 
