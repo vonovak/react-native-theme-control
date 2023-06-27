@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
 import { SetThemeOptions, ThemeControlModule } from './NativeThemeControl';
 import { ThemePreference } from './types';
@@ -25,7 +25,7 @@ export const useThemePreference = (): ThemePreference => {
   const [themePreference, setPreference] =
     useState<ThemePreference>(getThemePreference);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const subscription = themeSwitchEventEmitter.addListener(
       eventName,
       setPreference,
