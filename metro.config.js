@@ -31,18 +31,12 @@ const blockList = exclusionList([
  * where the `node_modules` folder lives. Metro will otherwise fail to resolve
  * anything.
  */
-module.exports = {
+const config = {
   projectRoot: path.join(__dirname, 'example'),
   watchFolders: [__dirname],
   resolver: {
     blockList,
   },
-  transformer: {
-    getTransformOptions: async () => ({
-      transform: {
-        experimentalImportSupport: false,
-        inlineRequires: true,
-      },
-    }),
-  },
 };
+const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
+module.exports = mergeConfig(getDefaultConfig(__dirname), config);
