@@ -15,9 +15,5 @@ Pod::Spec.new do |s|
 
   s.source_files = "ios/**/*.{h,m,mm}"
 
-  if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
-    install_modules_dependencies(s)
-  else
-    s.dependency "React-Core"
-  end
+  install_modules_dependencies(s)
 end
