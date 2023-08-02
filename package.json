@@ -97,7 +97,6 @@
     "!**/__fixtures__",
     "!**/__mocks__",
     "app.plugin.js",
-    "expo-module.config.json",
     "plugin/build"
   ],
   "jest": {
