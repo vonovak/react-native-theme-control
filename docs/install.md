@@ -36,7 +36,9 @@ First, make sure that `userInterfaceStyle` in `expo` entry in expo config file i
 }
 ```
 
-then, add `@vonovak/react-native-theme-control` to the `plugins` entry in expo config file, e.g.:
+then, only if you want to enable theme persistence across app restarts, or force a light / dark mode, add `@vonovak/react-native-theme-control` to the `plugins` entry in expo config file.
+
+For example, the following will enable theme persistence across app restarts.
 
 `"plugins": ["@vonovak/react-native-theme-control"]`
 
