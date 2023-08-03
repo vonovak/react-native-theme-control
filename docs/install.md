@@ -2,7 +2,7 @@
 
 iOS 13 or newer is required for theming logic. However, the package builds with iOS 10 and newer.
 
-Version 4 supports RN 0.72.
+Version 4 supports RN 0.72 and Expo 49.
 
 Version 3 supports RN 0.71 and Expo 48.
 
