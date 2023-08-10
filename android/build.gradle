@@ -26,16 +26,16 @@ if (isNewArchitectureEnabled()) {
   apply plugin: "com.facebook.react"
 }
 
-def getExtOrIntegerDefault(name) {
-  return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties['RNTC_' + name]).toInteger()
-}
-def safeExtGet(prop, fallback) {
-  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+def getExtOrDefault(name, defaultValue) {
+  return rootProject.ext.has(name) ? rootProject.ext.get(name) : defaultValue
 }
 
 android {
-  namespace = 'eu.reactnativetraining'
-  compileSdkVersion getExtOrIntegerDefault('compileSdkVersion')
+  def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
+  if (agpVersion.tokenize('.')[0].toInteger() >= 7) {
+    namespace "eu.reactnativetraining"
+  }
+  compileSdkVersion getExtOrDefault('compileSdkVersion', 33)
 
   // Used to override the NDK path/version on internal CI or by allowing
   // users to customize the NDK path/version from their root project (e.g. for M1 support)
@@ -47,8 +47,8 @@ android {
   }
 
   defaultConfig {
-    minSdkVersion getExtOrIntegerDefault('minSdkVersion')
-    targetSdkVersion getExtOrIntegerDefault('targetSdkVersion')
+    minSdkVersion getExtOrDefault('minSdkVersion', 21)
+    targetSdkVersion getExtOrDefault('targetSdkVersion', 33)
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
   }
 
@@ -66,9 +66,9 @@ repositories {
   mavenLocal()
   mavenCentral()
 }
-
 dependencies {
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"  // From node_modules
-  implementation "androidx.core:core:${safeExtGet('androidxCoreVersion', '1.7.0')}"
+  implementation "androidx.core:core:${getExtOrDefault('androidxCoreVersion', project.properties['RNTC_androidxCoreVersion'])}"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib:${getExtOrDefault('kotlinVersion', project.properties['RNTC_kotlinVersion'])}"
 }
