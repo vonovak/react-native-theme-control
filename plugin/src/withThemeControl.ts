@@ -1,5 +1,4 @@
 import { addImports } from '@expo/config-plugins/build/android/codeMod';
-import { Paths } from '@expo/config-plugins/build/ios';
 import { mergeContents } from '@expo/config-plugins/build/utils/generateCode';
 import {
   ConfigPlugin,
@@ -103,22 +102,23 @@ const withIosPlugin: ThemeConfigPlugin = (config, options) => {
   return withDangerousMod(config, [
     'ios',
     async (config) => {
-      const delegatePath = getAppDelegateFilePath(
+      const rctAppDelegatePath = getAppDelegateFilePath(
         config.modRequest.projectRoot,
         'RCTAppDelegate.@(m|mm)',
       );
-      const contents = Paths.getFileInfo(delegatePath).contents;
-      const withImport = addAppDelegateImport(contents).contents;
+      const withImport = addAppDelegateImport(
+        readFileSync(rctAppDelegatePath, 'utf8'),
+      ).contents;
       const withThemeRecovered = addThemeRecovery(withImport, options).contents;
-      await writeFile(delegatePath, withThemeRecovered);
+      await writeFile(rctAppDelegatePath, withThemeRecovered);
 
-      const podspecPath = getAppDelegateFilePath(
+      const appDelegatePodspecPath = getAppDelegateFilePath(
         config.modRequest.projectRoot,
         'React-RCTAppDelegate.podspec',
       );
-      const podspecContent = readFileSync(podspecPath, 'utf8');
+      const podspecContent = readFileSync(appDelegatePodspecPath, 'utf8');
       const withHeaderSearchPath = addHeaderSearchPath(podspecContent).contents;
-      await writeFile(podspecPath, withHeaderSearchPath);
+      await writeFile(appDelegatePodspecPath, withHeaderSearchPath);
       return config;
     },
   ]);
