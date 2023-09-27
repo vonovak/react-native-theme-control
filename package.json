@@ -15,7 +15,7 @@
     "prepare": "bob build && yarn run build:plugin",
     "release": "yarn prepare && npx semantic-release",
     "android": "npx react-native run-android",
-    "start": "npx patch-package && cd example && npx react-native start",
+    "start": "npx patch-package && cd example && npx react-native start --reset-cache",
     "ios": "npx react-native run-ios",
     "pods": "cd example && pod-install --quiet",
     "build:plugin": "tsc --build plugin",
@@ -29,7 +29,7 @@
   "repository": "https://github.com/vonovak/react-native-theme-control",
   "author": "vonovak <vonovak@gmail.com> (https://github.com/vonovak)",
   "homepage": "https://www.npmjs.com/package/@vonovak/react-native-theme-control",
-  "license": "MPL-2.0",
+  "license": "MIT",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
     "access": "public"
@@ -74,7 +74,7 @@
     "typescript": "^5.1.3"
   },
   "peerDependencies": {
-    "expo": ">=48.0.0",
+    "expo": ">=49.0.0",
     "react": "*",
     "react-native": ">=0.72.0"
   },

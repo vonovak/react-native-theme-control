@@ -144,7 +144,7 @@ class ThemeControlModule(reactContext: ReactApplicationContext?) :
       return when (mode) {
         AppCompatDelegate.MODE_NIGHT_YES -> "dark"
         AppCompatDelegate.MODE_NIGHT_NO -> "light"
-        else -> "auto"
+        else -> "system"
       }
     }
   }

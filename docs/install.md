@@ -154,7 +154,7 @@ export function SimpleScreen() {
 
   const textColorStyle = { color: textColor };
 
-  const values: Array<ThemePreference> = ['light', 'dark', 'auto'];
+  const values: Array<ThemePreference> = ['light', 'dark', 'system'];
 
   return (
     <View

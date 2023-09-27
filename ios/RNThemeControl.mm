@@ -3,6 +3,7 @@
 #import <React/RCTConvert.h>
 
 static NSString *const THEME_ENTRY_KEY = @"RNThemeControl";
+static NSString *const systemThemeName = @"system";
 
 @implementation RNThemeControl
 
@@ -39,7 +40,7 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getThemePreference)
       return result;
     }
   }
-  return @"auto";
+  return systemThemeName;
 }
 
 RCT_EXPORT_METHOD(setTheme:(NSString*) themeStyle
@@ -49,7 +50,7 @@ RCT_EXPORT_METHOD(setTheme:(NSString*) themeStyle
 {
 
   if (@available(iOS 13.0, *)) {
-    NSString* patchedThemeStyle = [@"auto" isEqualToString:themeStyle] ? @"unspecified" : themeStyle;
+    NSString* patchedThemeStyle = [systemThemeName isEqualToString:themeStyle] ? @"unspecified" : themeStyle;
     UIUserInterfaceStyle style = [RCTConvert UIUserInterfaceStyle:patchedThemeStyle];
 
     BOOL shouldPersistTheme = options[@"persistTheme"] == nil || [options[@"persistTheme"] boolValue];

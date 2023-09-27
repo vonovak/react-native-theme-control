@@ -5,10 +5,9 @@ import {
   withDangerousMod,
   withMainActivity,
 } from 'expo/config-plugins';
-import { promises, readFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import { sync as globSync } from 'glob';
 import * as path from 'path';
-const { writeFile } = promises;
 
 const moduleName = '@vonovak/react-native-theme-control';
 const themeRecoveryTag = '-theme-recovery';
@@ -101,7 +100,7 @@ const addThemeRecovery = (src: string, options: Options) => {
 const withIosPlugin: ThemeConfigPlugin = (config, options) => {
   return withDangerousMod(config, [
     'ios',
-    async (config) => {
+    (config) => {
       const rctAppDelegatePath = getAppDelegateFilePath(
         config.modRequest.projectRoot,
         'RCTAppDelegate.@(m|mm)',
@@ -110,7 +109,7 @@ const withIosPlugin: ThemeConfigPlugin = (config, options) => {
         readFileSync(rctAppDelegatePath, 'utf8'),
       ).contents;
       const withThemeRecovered = addThemeRecovery(withImport, options).contents;
-      await writeFile(rctAppDelegatePath, withThemeRecovered);
+      writeFileSync(rctAppDelegatePath, withThemeRecovered);
 
       const appDelegatePodspecPath = getAppDelegateFilePath(
         config.modRequest.projectRoot,
@@ -118,7 +117,7 @@ const withIosPlugin: ThemeConfigPlugin = (config, options) => {
       );
       const podspecContent = readFileSync(appDelegatePodspecPath, 'utf8');
       const withHeaderSearchPath = addHeaderSearchPath(podspecContent).contents;
-      await writeFile(appDelegatePodspecPath, withHeaderSearchPath);
+      writeFileSync(appDelegatePodspecPath, withHeaderSearchPath);
       return config;
     },
   ]);

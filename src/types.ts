@@ -11,4 +11,4 @@ export type NavbarAppearanceParams = {
   barStyle?: 'dark-content' | 'light-content' | null;
 };
 
-export type ThemePreference = 'dark' | 'light' | 'auto';
+export type ThemePreference = 'dark' | 'light' | 'system';
