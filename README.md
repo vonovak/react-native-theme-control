@@ -50,4 +50,4 @@ Some naming inspiration for the Android Navbar components was taken from [react-
 
 ## License
 
-MPL-2.0
+MIT
