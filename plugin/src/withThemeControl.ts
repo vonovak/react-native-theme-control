@@ -9,7 +9,7 @@ import { readFileSync, writeFileSync } from 'fs';
 import { sync as globSync } from 'glob';
 import * as path from 'path';
 
-const moduleName = '@vonovak/react-native-theme-control';
+const themeControlName = '@vonovak/react-native-theme-control';
 const themeRecoveryTag = '-theme-recovery';
 
 type Options = {
@@ -36,7 +36,7 @@ const withMainActivityThemeRecovery: ThemeConfigPlugin = (config, options) => {
 
     config.modResults.contents = mergeContents({
       src,
-      tag: moduleName + themeRecoveryTag,
+      tag: themeControlName + themeRecoveryTag,
       newSrc: `    ${themeRecoveryCode}`,
       anchor: /(?<=^.*super\.onCreate.*$)/m,
       offset: 1,
@@ -47,9 +47,9 @@ const withMainActivityThemeRecovery: ThemeConfigPlugin = (config, options) => {
   });
 };
 
-const addAppDelegateImport = (src: string) => {
+const addImportToAppDelegate = (src: string) => {
   return mergeContents({
-    tag: moduleName + '-import',
+    tag: themeControlName + '-import',
     src,
     newSrc: `#if __has_include(<RNThemeControl.h>)
     #import <RNThemeControl.h>
@@ -63,11 +63,11 @@ const addAppDelegateImport = (src: string) => {
 };
 const addHeaderSearchPath = (src: string) => {
   const pkgLocation = path.dirname(
-    require.resolve(`${moduleName}/package.json`),
+    require.resolve(`${themeControlName}/package.json`),
   );
 
   return mergeContents({
-    tag: moduleName + '-header',
+    tag: themeControlName + '-header',
     src,
     newSrc: `"${pkgLocation}/ios",`,
     anchor: /header_search_paths = \[/,
@@ -88,7 +88,7 @@ const addThemeRecovery = (src: string, options: Options) => {
   })();
 
   return mergeContents({
-    tag: moduleName + themeRecoveryTag,
+    tag: themeControlName + themeRecoveryTag,
     src,
     newSrc: themeRecoveryCode,
     anchor: /rootViewController.view = rootView;/,
@@ -101,50 +101,105 @@ const withIosPlugin: ThemeConfigPlugin = (config, options) => {
   return withDangerousMod(config, [
     'ios',
     (config) => {
-      const rctAppDelegatePath = getAppDelegateFilePath(
-        config.modRequest.projectRoot,
-        'RCTAppDelegate.@(m|mm)',
-      );
-      const withImport = addAppDelegateImport(
-        readFileSync(rctAppDelegatePath, 'utf8'),
-      ).contents;
-      const withThemeRecovered = addThemeRecovery(withImport, options).contents;
-      writeFileSync(rctAppDelegatePath, withThemeRecovered);
-
-      const appDelegatePodspecPath = getAppDelegateFilePath(
-        config.modRequest.projectRoot,
-        'React-RCTAppDelegate.podspec',
-      );
-      const podspecContent = readFileSync(appDelegatePodspecPath, 'utf8');
-      const withHeaderSearchPath = addHeaderSearchPath(podspecContent).contents;
-      writeFileSync(appDelegatePodspecPath, withHeaderSearchPath);
+      const projectRoot = config.modRequest.projectRoot;
+      patchExpoDevLauncherController(projectRoot);
+      patchAppDelegate(projectRoot, options);
+      patchPodspecForUseFrameworks(projectRoot);
       return config;
     },
   ]);
 };
+function patchExpoDevLauncherController(projectRoot: string) {
+  // this is only for the expo dev client, which overrides system theme and rewrites what we have set up
+  // TODO this should really be fixed in expo itself
+  try {
+    const devLauncherPath = getDevLauncherPath(projectRoot);
+    const fileContents = readFileSync(devLauncherPath, 'utf8');
+    const fileContents2 = fileContents.replace(
+      /(RCTOverrideAppearancePreference\((.*?)\);)/g,
+      '//$1',
+    );
+    writeFileSync(devLauncherPath, fileContents2, 'utf8');
+  } catch (err) {
+    console.warn(
+      `${themeControlName}: Could not patch Expo Dev Launcher, this is not a fatal error, it'll only influence the dev client`,
+    );
+  }
+}
 
+function patchAppDelegate(projectRoot: string, options: Options) {
+  const rctAppDelegatePath = getAppDelegateFilePath(
+    projectRoot,
+    'RCTAppDelegate.@(m|mm)',
+  );
+  const withThemeControlImported = addImportToAppDelegate(
+    readFileSync(rctAppDelegatePath, 'utf8'),
+  ).contents;
+  const withThemeRecovered = addThemeRecovery(
+    withThemeControlImported,
+    options,
+  ).contents;
+  writeFileSync(rctAppDelegatePath, withThemeRecovered);
+}
+
+function patchPodspecForUseFrameworks(projectRoot: string) {
+  const appDelegatePodspecPath = getAppDelegateFilePath(
+    projectRoot,
+    'React-RCTAppDelegate.podspec',
+  );
+  const podspecContent = readFileSync(appDelegatePodspecPath, 'utf8');
+  const withHeaderSearchPath = addHeaderSearchPath(podspecContent).contents;
+  writeFileSync(appDelegatePodspecPath, withHeaderSearchPath);
+}
+
+function getDevLauncherPath(projectRoot: string): string {
+  return getFilePath({
+    projectRoot,
+    packageName: 'expo-dev-launcher',
+    subpath: 'ios/',
+    fileName: 'EXDevLauncherController.m',
+  });
+}
 function getAppDelegateFilePath(projectRoot: string, fileName: string): string {
-  const rnLocation = path.dirname(require.resolve('react-native/package.json'));
-  if (!rnLocation) {
+  return getFilePath({
+    projectRoot,
+    packageName: 'react-native',
+    subpath: 'Libraries/AppDelegate',
+    fileName,
+  });
+}
+function getFilePath({
+  projectRoot,
+  packageName,
+  subpath,
+  fileName,
+}: {
+  projectRoot: string;
+  packageName: string;
+  subpath: string;
+  fileName: string;
+}): string {
+  const location = path.dirname(require.resolve(`${packageName}/package.json`));
+  if (!location) {
     throw new Error(
-      `${moduleName}: Could not locate React Native from root: "${projectRoot}"`,
+      `${themeControlName}: Could not locate React Native from root: "${projectRoot}"`,
     );
   }
   const [using, ...extra] = globSync(fileName, {
     absolute: true,
-    cwd: path.join(rnLocation, 'Libraries/AppDelegate'),
+    cwd: path.join(location, subpath),
     ignore: [],
   });
 
   if (!using) {
     throw new Error(
-      `${moduleName}: Could not locate a valid ${fileName} from root: "${projectRoot}"`,
+      `${themeControlName}: Could not locate a valid ${fileName} from root: "${projectRoot}"`,
     );
   }
 
   if (extra.length > 0) {
-    console.warn(`${moduleName}: multiple candidates for RN path`, {
-      tag: 'RCTAppDelegate',
+    console.warn(`${themeControlName}: multiple candidates for a path`, {
+      tag: themeControlName,
       fileName,
       projectRoot,
       using,
@@ -164,7 +219,7 @@ const withThemeControl: ThemeConfigPlugin = (config, options = {}) => {
     !['userPreference', 'light', 'dark'].includes(options.mode)
   ) {
     throw new Error(
-      `${moduleName}: Invalid mode "${options.mode}". Valid modes are "userPreference", "light" and "dark".`,
+      `${themeControlName}: Invalid mode "${options.mode}". Valid modes are "userPreference", "light" and "dark".`,
     );
   }
   config = withIosPlugin(config, options);
