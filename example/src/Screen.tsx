@@ -49,7 +49,7 @@ export function Screen({
   const nextTheme = isDarkMode ? 'light' : 'dark';
   const [show, setShow] = useState(false);
 
-  const values: Array<ThemePreference> = ['light', 'dark', 'auto'];
+  const values: Array<ThemePreference> = ['light', 'dark', 'system'];
   const changeAppearance = (newAppearance: string) => {
     setThemePreference(newAppearance as ThemePreference, { persistTheme });
   };

@@ -30,9 +30,9 @@
 ▸ **setThemePreference**(`style`, `options?`): `void`
 
 Sets the theme preference, which also influences the value returned by `useColorScheme()` hook.
-can be `auto`, `light` or `dark`.
+can be `system`, `light` or `dark`.
 
-`auto` means that the theme preference is determined by the system.
+`system` means that the theme preference is determined by the system.
 
 #### Parameters
 
@@ -53,7 +53,7 @@ ___
 
 ▸ **useThemePreference**(): [`ThemePreference`](readme-internal.md#themepreference)
 
-A react hook that returns the current theme preference, which might be `dark`, `light` (if you have set the theme before by calling `setAppearance`) or `auto`.
+A React hook that returns the current theme preference, which might be `dark`, `light` (if you have set the theme before by calling `setAppearance`) or `system`.
 
 ___
 
@@ -166,7 +166,7 @@ ___
 
 ### ThemePreference
 
-Ƭ **ThemePreference**: ``"dark"`` | ``"light"`` | ``"auto"``
+Ƭ **ThemePreference**: ``"dark"`` | ``"light"`` | ``"system"``
 
 ___
 
