@@ -26,7 +26,7 @@ Then, run `npx pod-install` and rebuild your iOS and Android projects.
 
 ### Expo
 
-First, make sure that `userInterfaceStyle` in `expo` entry in expo config file is set to `automatic`.
+First, make sure that `userInterfaceStyle` in `expo` entry in expo config file is set to `automatic` and install `expo-system-ui` [as documented](https://docs.expo.dev/develop/user-interface/color-themes/#configuration).
 
 ```json
 {
