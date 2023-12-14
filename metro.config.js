@@ -36,6 +36,10 @@ const config = {
   watchFolders: [__dirname],
   resolver: {
     blockList,
+    // for some reason, since 73 metro does not see this
+    extraNodeModules: {
+      '@vonovak/react-native-theme-control': __dirname,
+    },
   },
 };
 const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
