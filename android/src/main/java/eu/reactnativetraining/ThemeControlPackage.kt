@@ -8,7 +8,7 @@ import com.facebook.react.module.model.ReactModuleInfoProvider
 
 class ThemeControlPackage : TurboReactPackage() {
 
-  override fun getModule(name: String?, ctx: ReactApplicationContext?): NativeModule? {
+  override fun getModule(name: String, ctx: ReactApplicationContext): NativeModule? {
     return if (ThemeControlModule.NAME == name) {
       ThemeControlModule(ctx)
     } else {
