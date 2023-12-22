@@ -107,6 +107,9 @@ ___
 
 ▸ **AppBackground**(`props`): ``null``
 
+Sets the background color of the ApplicationWindow (iOS) or the current Activity (Android).
+This is useful with React Navigation to prevent [white flashes when navigating](https://github.com/react-navigation/react-navigation/issues/10951) on Android, or to control the background color users see when presenting a modal on iOS.
+
 #### Parameters
 
 | Name | Type |
