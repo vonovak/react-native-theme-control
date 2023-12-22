@@ -31,6 +31,9 @@ public abstract class NativeThemeControlSpec extends ReactContextBaseJavaModule 
   @ReactMethod
   @DoNotStrip
   public abstract void setNavbarAppearance(ReadableMap params, Promise promise);
+  @ReactMethod
+  @DoNotStrip
+  public abstract void setAppBackground(ReadableMap params, Promise promise);
 
   @ReactMethod(isBlockingSynchronousMethod = true)
   @DoNotStrip
