@@ -110,6 +110,8 @@ ___
 Sets the background color of the ApplicationWindow (iOS) or the current Activity (Android).
 This is useful with React Navigation to prevent [white flashes when navigating](https://github.com/react-navigation/react-navigation/issues/10951) on Android, or to control the background color users see when presenting a modal on iOS.
 
+You need to specify the background color for light and dark mode separately.
+
 #### Parameters
 
 | Name | Type |
@@ -146,6 +148,8 @@ ___
 ### AppBackgroundProps
 
 Ƭ **AppBackgroundProps**: `Object`
+
+Background color of the application window (iOS) or the current Activity (Android), for light and dark mode separately.
 
 #### Type declaration
 
