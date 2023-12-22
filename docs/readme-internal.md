@@ -13,15 +13,18 @@
 - [NavigationBar](readme-internal.md#navigationbar)
 - [ThemeAwareStatusBar](readme-internal.md#themeawarestatusbar)
 - [SystemBars](readme-internal.md#systembars)
+- [AppBackground](readme-internal.md#appbackground)
 
 ### Type aliases
 
+- [AppBackgroundProps](readme-internal.md#appbackgroundprops)
 - [ThemedStatusBarProps](readme-internal.md#themedstatusbarprops)
 - [SystemBarsProps](readme-internal.md#systembarsprops)
 - [NavigationBarProps](readme-internal.md#navigationbarprops)
 - [NavbarAppearanceParams](readme-internal.md#navbarappearanceparams)
 - [ThemePreference](readme-internal.md#themepreference)
 - [SetThemeOptions](readme-internal.md#setthemeoptions)
+- [AppBackgroundProps](readme-internal.md#appbackgroundprops)
 
 ## Functions
 
@@ -101,6 +104,20 @@ However, you can override this behavior by passing a custom `barStyle` prop.
 
 ___
 
+### AppBackground
+
+▸ **AppBackground**(`props`): ``null``
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `props` | [`AppBackgroundProps`](modules.md#appbackgroundprops) |
+
+#### Returns
+
+``null``
+
 ### SystemBars
 
 ▸ **SystemBars**(`props`): `Element`
@@ -130,7 +147,26 @@ ___
 
 Props of [SystemBars](readme-internal.md#systembars)
 
+---
+### AppBackgroundProps
+
+Ƭ **AppBackgroundProps**: `Object`
+
+#### Type declaration
+
+| Name | Type |
+| :------ | :------ |
+| `dark` | `ColorValue` |
+| `light` | `ColorValue` |
 ___
+
+### SystemBarsProps
+
+Ƭ **SystemBarsProps**: [`ThemeAwareStatusBarProps`](modules.md#themeawarestatusbarprops) & `Pick`\<[`NavigationBarProps`](modules.md#navigationbarprops), ``"dividerColor"``\>
+
+Props of [SystemBars](modules.md#systembars)
+
+---
 
 ### NavigationBarProps
 

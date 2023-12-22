@@ -5,7 +5,7 @@ import { ThemePreference } from './types';
 
 export * from './SystemBars';
 export { NavigationBar } from './NavigationBar';
-export { AppBackground } from './AppBackground';
+export { AppBackground, type AppBackgroundProps } from './AppBackground';
 export * from './types';
 
 const eventName = 'setThemePreference';
