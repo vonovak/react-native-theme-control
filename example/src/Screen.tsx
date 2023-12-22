@@ -21,6 +21,7 @@ import { MenuView } from '@react-native-menu/menu';
 import SegmentedControl from '@react-native-segmented-control/segmented-control/js/SegmentedControl.js';
 import { useState } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useNavigation } from '@react-navigation/native';
 
 type Props = {
   barsBackground: ColorValue;
@@ -51,8 +52,12 @@ export function Screen({
 
   const values: Array<ThemePreference> = ['light', 'dark', 'system'];
   const changeAppearance = (newAppearance: string) => {
-    setThemePreference(newAppearance as ThemePreference, { persistTheme });
+    setThemePreference(newAppearance as ThemePreference, {
+      persistTheme,
+    });
   };
+
+  const navigation = useNavigation();
 
   return (
     <View
@@ -80,7 +85,13 @@ export function Screen({
       <Text style={textColorStyle}>
         useThemePreference(): {themePreference}
       </Text>
-
+      <Button
+        title="open ModalScreen"
+        onPress={() => {
+          // @ts-ignore
+          navigation.navigate('ModalScreen');
+        }}
+      />
       <View
         style={{
           flexDirection: 'row',

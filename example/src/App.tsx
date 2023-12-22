@@ -18,11 +18,13 @@ import DocumentPicker from 'react-native-document-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MenuView } from '@react-native-menu/menu';
 import { SimpleScreen } from './SimpleScreen';
+import { AppBackground } from '../../src/AppBackground';
 
 type RootStackParamList = {
   Home: undefined;
   ScreenTwo: undefined;
   SimpleScreen: undefined;
+  ModalScreen: undefined;
 };
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -135,6 +137,11 @@ function AppStack() {
       <Stack.Screen name="Home" component={ScreenOne} />
       <Stack.Screen name="ScreenTwo" component={ScreenTwo} />
       <Stack.Screen name="SimpleScreen" component={SimpleScreen} />
+      <Stack.Screen
+        name="ModalScreen"
+        component={SimpleScreen}
+        options={{ presentation: 'modal' }}
+      />
     </Stack.Navigator>
   );
 }
@@ -143,6 +150,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <AppStack />
+      <AppBackground dark={'green'} light={'gray'} />
     </NavigationContainer>
   );
 }

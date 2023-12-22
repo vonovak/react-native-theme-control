@@ -19,7 +19,8 @@
     "ios": "npx react-native run-ios",
     "pods": "cd example && pod-install --quiet",
     "build:plugin": "tsc --build plugin",
-    "clean:plugin": "expo-module clean plugin"
+    "clean:plugin": "expo-module clean plugin",
+    "docs": "typedoc --plugin typedoc-plugin-markdown --out docs2 src/index.ts"
   },
   "keywords": [
     "react-native",

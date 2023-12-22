@@ -11,11 +11,9 @@ import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.ReactConstants
-import com.facebook.react.module.annotations.ReactModule
 
-@ReactModule(name = ThemeControlModule.NAME)
 class ThemeControlModule(reactContext: ReactApplicationContext?) :
-  NativeThemeControlSpec(reactContext) {
+    NativeThemeControlSpec(reactContext) {
   override fun getName(): String {
     return NAME
   }
@@ -27,19 +25,14 @@ class ThemeControlModule(reactContext: ReactApplicationContext?) :
 
   @ReactMethod
   override fun setNavbarAppearance(params: ReadableMap, promise: Promise) {
-    val bgColor =
-      if (params.isNull("backgroundColor")) null else params.getInt("backgroundColor")
-    val dividerColor =
-      if (params.isNull("dividerColor")) null else params.getInt("dividerColor")
+    val bgColor = if (params.isNull("backgroundColor")) null else params.getInt("backgroundColor")
+    val dividerColor = if (params.isNull("dividerColor")) null else params.getInt("dividerColor")
     val barStyle = if (params.isNull("barStyle")) null else params.getString("barStyle")
 
     UiThreadUtil.runOnUiThread {
       val currentActivity = currentActivity
       if (currentActivity == null) {
-        FLog.e(
-          ReactConstants.TAG,
-          "$NAME cannot change navbar bgColor, activity is null."
-        )
+        FLog.e(ReactConstants.TAG, "$NAME cannot change navbar bgColor, activity is null.")
         return@runOnUiThread
       }
       val window = currentActivity.window
@@ -53,45 +46,57 @@ class ThemeControlModule(reactContext: ReactApplicationContext?) :
         val decorView = window.decorView
         val lightNavigationBars = "dark-content" == barStyle
         WindowInsetsControllerCompat(window, decorView).isAppearanceLightNavigationBars =
-          lightNavigationBars
+            lightNavigationBars
       }
     }
     promise.resolve(null)
   }
 
   @ReactMethod
+  override fun setAppBackground(opts: ReadableMap, promise: Promise) {
+    val appBackground = if (opts.hasKey("appBackground")) opts.getInt("appBackground") else null
+
+    val activity = currentActivity
+
+    UiThreadUtil.runOnUiThread {
+      if (appBackground != null) {
+        activity?.window?.decorView?.setBackgroundColor(appBackground)
+      }
+    }
+    promise.resolve(activity != null)
+  }
+
+  @ReactMethod
   override fun setTheme(themeStyle: String, opts: ReadableMap, promise: Promise) {
     val persistTheme = !opts.hasKey("persistTheme") || opts.getBoolean("persistTheme")
     val restartActivity = opts.hasKey("restartActivity") && opts.getBoolean("restartActivity")
-    if (persistTheme || restartActivity) {
-      persistTheme(themeStyle)
-    }
     @AppCompatDelegate.NightMode val mode = stringToMode(themeStyle)
-    cachedMode = mode
 
-    UiThreadUtil.runOnUiThread {
-      if (restartActivity) {
-        val currentActivity = currentActivity
-        if (currentActivity != null) {
-          // the persisted / cached theme will be picked up
-          currentActivity.recreate()
-        } else {
-          FLog.e(ReactConstants.TAG, "$NAME cannot recreate, activity is null.")
-        }
-      } else {
-        AppCompatDelegate.setDefaultNightMode(mode)
-      }
+    if (persistTheme || restartActivity) {
+      persistTheme(mode)
     }
+
+    UiThreadUtil.runOnUiThread { setMode(mode, restartActivity) }
     promise.resolve(null)
   }
 
-  private fun persistTheme(themeStyle: String) {
-    val prefs = reactApplicationContext.getSharedPreferences(
-      NAME,
-      Context.MODE_PRIVATE
-    )
+  private fun setMode(mode: Int, restartActivity: Boolean) {
+    if (restartActivity) {
+      val currentActivity = currentActivity
+      if (currentActivity != null) {
+        // the persisted / cached theme will be picked up
+        currentActivity.recreate()
+      } else {
+        FLog.e(ReactConstants.TAG, "$NAME cannot recreate, activity is null.")
+      }
+    } else {
+      AppCompatDelegate.setDefaultNightMode(mode)
+    }
+  }
+
+  private fun persistTheme(mode: Int) {
+    val prefs = reactApplicationContext.getSharedPreferences(NAME, Context.MODE_PRIVATE)
     val editor = prefs.edit()
-    @AppCompatDelegate.NightMode val mode = stringToMode(themeStyle)
     if (mode == AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) {
       editor.remove(THEME_ENTRY_KEY)
     } else {
@@ -103,32 +108,19 @@ class ThemeControlModule(reactContext: ReactApplicationContext?) :
   companion object {
     const val NAME = "RNThemeControl"
     const val THEME_ENTRY_KEY = "ThemeControlModuleEntry"
-    private var cachedMode: Int? = null
-
-    fun getThemeMode(ctx: Context): Int {
-      return cachedMode ?: let {
-        val prefs = ctx.getSharedPreferences(NAME, Context.MODE_PRIVATE)
-        @AppCompatDelegate.NightMode
-        val mode = prefs.getInt(THEME_ENTRY_KEY, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-        cachedMode = mode
-        return mode
-      }
-    }
 
     fun recoverApplicationTheme(ctx: Context): Int {
-      val mode = getThemeMode(ctx)
-      setMode(mode)
-      return mode
+      val prefs = ctx.getSharedPreferences(NAME, Context.MODE_PRIVATE)
+      val nightMode = prefs.getInt(THEME_ENTRY_KEY, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+      forceTheme(nightMode)
+
+      return nightMode
     }
 
     fun forceTheme(forcedMode: Int) {
-      setMode(forcedMode)
-    }
-
-    private fun setMode(mode: Int) {
       UiThreadUtil.assertOnUiThread()
-      // setDefaultNightMode will be a noop if no change is needed
-      AppCompatDelegate.setDefaultNightMode(mode)
+      // setDefaultNightMode is a noop if no change is needed
+      AppCompatDelegate.setDefaultNightMode(forcedMode)
     }
 
     @AppCompatDelegate.NightMode

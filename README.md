@@ -18,9 +18,9 @@ The package is tested with RN >= 0.66.1 (last tested with RN 73, Expo 49). See [
 
 Notice the color of scroll bar and keyboard in the screenshots below.
 
-| light mode                | dark mode               |
-| ------------------------- | ----------------------- |
-| ![light](./img/light.png) | ![dark](./img/dark.png) |
+| light mode                | dark mode               | application background in modal    |
+| ------------------------- | ----------------------- |------------------------------------|
+| ![light](./img/light.png) | ![dark](./img/dark.png) | ![app background](./img/modal.png) |
 
 ## Motivation
 

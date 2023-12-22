@@ -16,7 +16,8 @@ RCTBridgeModule
 // UIUserInterfaceStyle
 @property (nonatomic) NSInteger cachedStyle;
 
-+ (void) recoverApplicationTheme;
+// UIUserInterfaceStyle
++ (NSInteger) recoverApplicationTheme;
 // UIUserInterfaceStyle
 + (void) forceTheme: (NSInteger) forcedStyle;
 

@@ -13,15 +13,17 @@
 - [NavigationBar](readme-internal.md#navigationbar)
 - [ThemeAwareStatusBar](readme-internal.md#themeawarestatusbar)
 - [SystemBars](readme-internal.md#systembars)
+- [AppBackground](readme-internal.md#appbackground)
 
 ### Type aliases
 
-- [ThemedStatusBarProps](readme-internal.md#themedstatusbarprops)
+- [AppBackgroundProps](readme-internal.md#appbackgroundprops)
 - [SystemBarsProps](readme-internal.md#systembarsprops)
 - [NavigationBarProps](readme-internal.md#navigationbarprops)
 - [NavbarAppearanceParams](readme-internal.md#navbarappearanceparams)
 - [ThemePreference](readme-internal.md#themepreference)
 - [SetThemeOptions](readme-internal.md#setthemeoptions)
+- [AppBackgroundProps](readme-internal.md#appbackgroundprops)
 
 ## Functions
 
@@ -97,9 +99,28 @@ However, you can override this behavior by passing a custom `barStyle` prop.
 
 | Name    | Type |
 |:--------| :------ |
-| `props` | [`ThemeAwareStatusBarProps`](readme-internal.md#themedstatusbarprops) |
+| `props` | [`ThemeAwareStatusBarProps`](readme-internal.md#themeawarestatusbarprops) |
 
 ___
+
+### AppBackground
+
+▸ **AppBackground**(`props`): ``null``
+
+Sets the background color of the ApplicationWindow (iOS) or the current Activity (Android).
+This is useful with React Navigation to prevent [white flashes when navigating](https://github.com/react-navigation/react-navigation/issues/10951) on Android, or to control the background color users see when presenting a modal on iOS.
+
+You need to specify the background color for light and dark mode separately.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `props` | [`AppBackgroundProps`](modules.md#appbackgroundprops) |
+
+#### Returns
+
+``null``
 
 ### SystemBars
 
@@ -124,13 +145,27 @@ Props of [ThemeAwareStatusBar](readme-internal.md#themeawarestatusbar)
 
 ___
 
+### AppBackgroundProps
+
+Ƭ **AppBackgroundProps**: `Object`
+
+Background color of the application window (iOS) or the current Activity (Android), for light and dark mode separately.
+
+#### Type declaration
+
+| Name | Type |
+| :------ | :------ |
+| `dark` | `ColorValue` |
+| `light` | `ColorValue` |
+___
+
 ### SystemBarsProps
 
-Ƭ **SystemBarsProps**: [`ThemeAwareStatusBarProps`](readme-internal.md#themeawarestatusbarprops) & `Pick`<[`NavigationBarProps`](readme-internal.md#navigationbarprops), ``"dividerColor"``\>
+Ƭ **SystemBarsProps**: [`ThemeAwareStatusBarProps`](modules.md#themeawarestatusbarprops) & `Pick`\<[`NavigationBarProps`](modules.md#navigationbarprops), ``"dividerColor"``\>
 
-Props of [SystemBars](readme-internal.md#systembars)
+Props of [SystemBars](modules.md#systembars)
 
-___
+---
 
 ### NavigationBarProps
 

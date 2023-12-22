@@ -55,7 +55,7 @@ RCT_EXPORT_METHOD(setTheme:(NSString*) themeStyle
 
     BOOL shouldPersistTheme = options[@"persistTheme"] == nil || [options[@"persistTheme"] boolValue];
     if (shouldPersistTheme) {
-      [self persistTheme: style];
+      [self persistTheme:style];
     }
 
     self.cachedStyle = style;
@@ -67,7 +67,22 @@ RCT_EXPORT_METHOD(setTheme:(NSString*) themeStyle
   resolve([NSNull null]);
 }
 
-- (void) persistTheme: (UIUserInterfaceStyle) style API_AVAILABLE(ios(12.0)){
+RCT_EXPORT_METHOD(setAppBackground:(NSDictionary*) options
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+  UIColor* background = [RCTConvert UIColor:options[@"appBackground"]];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UIWindow* rootWindow = UIApplication.sharedApplication.delegate.window;
+    if (rootWindow) {
+      // the color of the Window itself is visible when opening full-screen modals
+      rootWindow.backgroundColor = background;
+    }
+    resolve(@(rootWindow != nil));
+  });
+}
+
+- (void) persistTheme: (UIUserInterfaceStyle) style API_AVAILABLE(ios(12.0)) {
   NSUserDefaults* defaults = NSUserDefaults.standardUserDefaults;
   if (style == UIUserInterfaceStyleUnspecified) {
     [defaults removeObjectForKey:THEME_ENTRY_KEY];
@@ -76,17 +91,19 @@ RCT_EXPORT_METHOD(setTheme:(NSString*) themeStyle
   }
 }
 
-+ (void) recoverApplicationTheme {
++ (NSInteger) recoverApplicationTheme {
   if (@available(iOS 13.0, *)) {
     NSUserDefaults* defaults = NSUserDefaults.standardUserDefaults;
     NSInteger recoveredInt = [defaults integerForKey:THEME_ENTRY_KEY];
     UIUserInterfaceStyle recoveredStyle = [RNThemeControl intToUIUserInterfaceStyle:recoveredInt];
-    BOOL noStyleToSet = recoveredStyle == 0;
-    if (noStyleToSet) {
-      return;
+
+    BOOL doesHaveStyle = recoveredStyle != 0;
+    if (doesHaveStyle) {
+      [RNThemeControl forceTheme:recoveredStyle];
     }
-    [RNThemeControl forceTheme:recoveredStyle];
+    return recoveredInt;
   }
+  return 0; //UIUserInterfaceStyleUnspecified
 }
 
 + (void) forceTheme: (NSInteger) forcedStyle {
@@ -102,7 +119,7 @@ RCT_EXPORT_METHOD(setTheme:(NSString*) themeStyle
   }
 }
 
-+ (nullable NSString*) getRCTAppearanceOverride: (UIUserInterfaceStyle) style API_AVAILABLE(ios(12.0)){
++ (nullable NSString*) getRCTAppearanceOverride: (UIUserInterfaceStyle) style API_AVAILABLE(ios(12.0)) {
   BOOL doNotOverride = style == UIUserInterfaceStyleUnspecified;
   if (doNotOverride) {
     return nil;
@@ -111,7 +128,7 @@ RCT_EXPORT_METHOD(setTheme:(NSString*) themeStyle
   return forcedStyle;
 }
 
-+ (UIUserInterfaceStyle) intToUIUserInterfaceStyle: (NSInteger) style  API_AVAILABLE(ios(12.0)){
++ (UIUserInterfaceStyle) intToUIUserInterfaceStyle: (NSInteger) style API_AVAILABLE(ios(12.0)) {
     switch(style) {
         case 1:
             return UIUserInterfaceStyleLight;
