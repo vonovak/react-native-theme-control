@@ -115,11 +115,11 @@ function patchExpoDevLauncherController(projectRoot: string) {
   try {
     const devLauncherPath = getDevLauncherPath(projectRoot);
     const fileContents = readFileSync(devLauncherPath, 'utf8');
-    const fileContents2 = fileContents.replace(
+    const commentOutAppearanceOverride = fileContents.replace(
       /(RCTOverrideAppearancePreference\((.*?)\);)/g,
       '//$1',
     );
-    writeFileSync(devLauncherPath, fileContents2, 'utf8');
+    writeFileSync(devLauncherPath, commentOutAppearanceOverride, 'utf8');
   } catch (err) {
     console.warn(
       `${themeControlName}: Could not patch Expo Dev Launcher, this is not a fatal error, it'll only influence the dev client`,
