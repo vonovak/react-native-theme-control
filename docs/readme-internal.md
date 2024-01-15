@@ -116,7 +116,7 @@ You need to specify the background color for light and dark mode separately.
 
 | Name | Type |
 | :------ | :------ |
-| `props` | [`AppBackgroundProps`](modules.md#appbackgroundprops) |
+| `props` | [`AppBackgroundProps`](readme-internal.md#appbackgroundprops) |
 
 #### Returns
 
@@ -161,9 +161,9 @@ ___
 
 ### SystemBarsProps
 
-Ƭ **SystemBarsProps**: [`ThemeAwareStatusBarProps`](modules.md#themeawarestatusbarprops) & `Pick`\<[`NavigationBarProps`](modules.md#navigationbarprops), ``"dividerColor"``\>
+Ƭ **SystemBarsProps**: [`ThemeAwareStatusBarProps`](readme-internal.md#themeawarestatusbarprops) & `Pick`\<[`NavigationBarProps`](readme-internal.md#navigationbarprops), ``"dividerColor"``\>
 
-Props of [SystemBars](modules.md#systembars)
+Props of [SystemBars](readme-internal.md#systembars)
 
 ---
 
