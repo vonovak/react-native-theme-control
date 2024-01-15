@@ -4,11 +4,13 @@ Control the native platform theme from React Native.
 
 ✅ Control theme of RN Views, as well as native UI controls (alerts, native menus, date pickers... on both Android and iOS)
 
+✅ Control the color of the ApplicationWindow (iOS) or the current Activity (Android) using [`AppBackground`](https://github.com/vonovak-org/react-native-theme-control/blob/main/docs/readme-internal.md#appbackground)
+
 ✅ Recover the theme upon app startup
 
 ✅ Supports Expo via a config plugin
 
-✅ New architecture supported
+✅ [New Architecture](https://reactnative.dev/docs/the-new-architecture/landing-page) supported
 
 Additionally, provides functionality to control the appearance (background and border color, light / dark buttons) of the Android navbar.
 
@@ -28,7 +30,7 @@ The use case for the package is explained in a [youtube video](https://youtu.be/
 
 In React Native, you can use the `useColorScheme()` hook, or other functions from the `Appearance` API to get information about the system theme.
 
-Note: as of RN 72, the following paragraph isn't true any more (there is `setColorScheme` now). However, this package still provides value as it can maintain your theme across app restarts.
+Note: as of RN 72, the following paragraph isn't true anymore (there is `setColorScheme` now). However, RN does not maintain the selected color scheme across restarts and doesn't contain other goodies in this package.
 
 Using that information, you can then render your Views in dark or light mode design. However, that information is read-only: you cannot influence what the `useColorScheme()` hook returns. What if you want to allow the user to choose the application theme? React Native core does not directly expose the APIs to do so.
 
