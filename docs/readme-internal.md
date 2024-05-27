@@ -98,7 +98,7 @@ ___
 Android-only component, which controls the navigation bar appearance: the background color, divider color and whether the navbar buttons are light or dark.
 If active color scheme is dark, then the button icons will be rendered as light by default. You can override this behavior by passing a custom `barStyle` prop.
 
-Multiple `NavigationBar` components can be mounted in the app, and always the last one will be used.
+Multiple `NavigationBar` components can be mounted in the app, and always the last one will be used (different screens of your app can have different appearance).
 
 If you want to control the appearance imperatively, call `setNavbarAppearance()`.
 
@@ -145,7 +145,7 @@ This is useful with React Navigation to prevent [white flashes when navigating](
 
 You need to specify the background color for light and dark mode separately.
 
-Multiple `AppBackground` components can be mounted in the app, and always the last one will be used.
+Multiple `AppBackground` components can be mounted in the app, and always the last one will be used (different screens of your app can have different appearance).
 
 If you want to control the appearance imperatively, call `setAppBackground()`.
 
