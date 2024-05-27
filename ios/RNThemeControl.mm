@@ -82,7 +82,7 @@ RCT_EXPORT_METHOD(setAppBackground:(NSDictionary*) options
   });
 }
 
-- (void) persistTheme: (UIUserInterfaceStyle) style API_AVAILABLE(ios(12.0)) {
+- (void) persistTheme: (UIUserInterfaceStyle) style {
   NSUserDefaults* defaults = NSUserDefaults.standardUserDefaults;
   if (style == UIUserInterfaceStyleUnspecified) {
     [defaults removeObjectForKey:THEME_ENTRY_KEY];

@@ -7,6 +7,8 @@
 - [setThemePreference](readme-internal.md#setthemepreference)
 - [getThemePreference](readme-internal.md#getthemepreference)
 - [useThemePreference](readme-internal.md#usethemepreference)
+- [setNavbarAppearance](readme-internal.md#setnavbarappearance)
+- [setAppBackground](readme-internal.md#setappbackground)
 
 ### React components
 
@@ -49,6 +51,34 @@ can be `system`, `light` or `dark`.
 
 Function that returns the current theme preference
 
+### setNavbarAppearance
+
+> **setNavbarAppearance**(`params`): `Promise`\<`null`\>
+
+Set the appearance of the navigation bar imperatively
+
+## Parameters
+
+• **\_params**: [`NavbarAppearanceParams`](../type-aliases/NavbarAppearanceParams.md)
+
+## Returns
+
+`Promise`\<`null`\>
+
+### setAppBackground
+
+> **setAppBackground**(`bgColor`): `Promise`\<`boolean`\>
+
+Set the application background imperatively
+
+## Parameters
+
+• **bgColor**: `ColorValue`
+
+## Returns
+
+`Promise`\<`boolean`\>
+
 ___
 
 ### useThemePreference
@@ -67,7 +97,10 @@ ___
 
 Android-only component, which controls the navigation bar appearance: the background color, divider color and whether the navbar buttons are light or dark.
 If active color scheme is dark, then the button icons will be rendered as light by default. You can override this behavior by passing a custom `barStyle` prop.
-If you want to control the appearance imperatively, call `NavigationBar.setNavbarAppearance()`.
+
+Multiple `NavigationBar` components can be mounted in the app, and always the last one will be used.
+
+If you want to control the appearance imperatively, call `setNavbarAppearance()`.
 
 - `dark-content` means dark icons on a light navigation bar
 - `light-content` means light icons on a dark navigation bar
@@ -107,10 +140,14 @@ ___
 
 ▸ **AppBackground**(`props`): ``null``
 
-Sets the background color of the ApplicationWindow (iOS) or the current Activity (Android).
+Sets the background color of the UIApplication window (iOS) or the current Activity (Android).
 This is useful with React Navigation to prevent [white flashes when navigating](https://github.com/react-navigation/react-navigation/issues/10951) on Android, or to control the background color users see when presenting a modal on iOS.
 
 You need to specify the background color for light and dark mode separately.
+
+Multiple `AppBackground` components can be mounted in the app, and always the last one will be used.
+
+If you want to control the appearance imperatively, call `setAppBackground()`.
 
 #### Parameters
 
