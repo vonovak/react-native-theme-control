@@ -6,14 +6,14 @@ index 2aceed6..72ab787 100644
      package="com.microsoft.reacttestapp"
  >
      <uses-feature android:name="android.hardware.camera.any" android:required="false" />
-+    <!-- npx patch-package react-native-test-app --include android/app/src  -->
- 
++    <!-- npx patch-package react-native-test-app -include android/app/src  -->
+
      <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
      <uses-permission android:name="android.permission.CAMERA" android:maxSdkVersion="${rntaEnableCamera}" />
 @@ -23,13 +24,17 @@
      >
          <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
- 
+
 -        <activity android:name="com.microsoft.reacttestapp.MainActivity" android:exported="true">
 +        <activity android:name="com.microsoft.reacttestapp.MainActivity" android:exported="true"
 +            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
@@ -23,9 +23,9 @@ index 2aceed6..72ab787 100644
                  <category android:name="android.intent.category.LAUNCHER" />
              </intent-filter>
          </activity>
- 
+
 -        <activity android:name="com.microsoft.reacttestapp.component.ComponentActivity" />
-+        <activity android:name="com.microsoft.reacttestapp.component.ComponentActivity" 
++        <activity android:name="com.microsoft.reacttestapp.component.ComponentActivity"
 +            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
 +        />
      </application>
@@ -39,18 +39,18 @@ index 751f767..e3092d7 100644
  import com.microsoft.reacttestapp.react.AppRegistry
  import com.microsoft.reacttestapp.react.BundleSource
 +import eu.reactnativetraining.ThemeControlModule
- 
+
  class MainActivity : ReactActivity() {
- 
+
 @@ -68,7 +69,9 @@ class MainActivity : ReactActivity() {
      }
- 
+
      override fun onCreate(savedInstanceState: Bundle?) {
 -        super.onCreate(savedInstanceState)
 +        super.onCreate(null)
 +      // npx patch-package react-native-test-app --include android/app/src
 +        ThemeControlModule.Companion.recoverApplicationTheme(this)
- 
+
          val checksum = ManifestProvider.checksum()
          val manifest = testApp.manifest
 diff --git a/node_modules/react-native-test-app/android/app/src/main/java/com/microsoft/reacttestapp/component/ComponentActivity.kt b/node_modules/react-native-test-app/android/app/src/main/java/com/microsoft/reacttestapp/component/ComponentActivity.kt
@@ -62,16 +62,16 @@ index 745f935..d9b3e76 100644
  import com.facebook.react.ReactActivityDelegate
  import com.microsoft.reacttestapp.BuildConfig
 +import eu.reactnativetraining.ThemeControlModule
- 
+
  class ComponentActivity : ReactActivity() {
- 
+
 @@ -35,7 +36,8 @@ class ComponentActivity : ReactActivity() {
      }
- 
+
      override fun onCreate(savedInstanceState: Bundle?) {
 -        super.onCreate(savedInstanceState)
 +        super.onCreate(null)
 +        ThemeControlModule.Companion.recoverApplicationTheme(this)
- 
+
          @Suppress("SENSELESS_COMPARISON")
          if (BuildConfig.ReactTestApp_singleApp === null) {
