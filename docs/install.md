@@ -64,7 +64,7 @@ There are manual installation steps that need to be performed:
 
 ### Android
 
-- in `MainApplication.java`:
+- in `MainApplication.kt / java`:
 
 ```diff
 + import eu.reactnativetraining.ThemeControlModule;
@@ -77,7 +77,6 @@ public void onCreate() {
 +  ThemeControlModule.Companion.recoverApplicationTheme(getApplicationContext());
 
   SoLoader.init(this, /* native exopackage */ false);
-  initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
 }
 ```
 
@@ -128,26 +127,26 @@ end
 
 #### Modify the AppDelegate
 
-Recovering the application theme involved modification of native files. The following is required:
+Recovering the application theme involves modification of native files. The following is required:
 
 <details>
   <summary>for RN >= 0.71</summary>
 
 We need to modify the `RCTAppDelegate.mm` file located in `node_modules/react-native/Libraries/AppDelegate/RCTAppDelegate.mm`.
 
-Use the modification shown below and apply it to the file in node_modules. Use tools such as `yarn patch` or `patch-package` to maintain the change. While it is a bit inconvenient to patch this file, you will get an efficient theme-switching solution (certainly better than loading the app, waiting to read theme from asyncstorage and redrawing).
+Use the modification shown below and apply it to the file in node_modules. Use tools such as `yarn patch` or `patch-package` to maintain the change. While it is a bit unusual to patch this file, you will get an efficient theme-switching solution (certainly better than loading the app, waiting to read theme from asyncStorage and re-drawing).
 
 This is a snippet from a RN 0.74 project:
 
 ```diff
-// use the one you need
++// use the one you need
 +#if __has_include(<RNThemeControl.h>)
 +    #import <RNThemeControl.h>
 +#else
 +    #import "RNThemeControl.h"
 +#endif
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+(BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   // ...
   if (self.newArchEnabled || self.fabricEnabled) {
@@ -180,7 +179,7 @@ This is a snippet from a RN 0.74 project:
 - in `AppDelegate.m` make the following changes:
 
 ```diff
-// use the one you need
++// use the one you need
 +#if __has_include(<RNThemeControl.h>)
 +    #import <RNThemeControl.h>
 +#else
