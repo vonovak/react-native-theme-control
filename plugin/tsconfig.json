@@ -1,8 +1,10 @@
 {
-  "extends": "expo-module-scripts/tsconfig.plugin",
+  "extends": "@tsconfig/node18/tsconfig.json",
   "compilerOptions": {
-    "outDir": "./build"
+    "outDir": "./build",
+    "jsx": "react",
+    "lib": ["es2022"],
+    "declaration": false
   },
   "include": ["./src"],
-  "exclude": ["**/__mocks__/*", "**/__tests__/*"]
-}
+  "exclude": ["**/__mocks__/*", "**/__tests__/*"]}

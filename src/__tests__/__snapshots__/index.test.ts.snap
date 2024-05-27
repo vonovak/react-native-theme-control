@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`sanity check for exported methods 1`] = `
+{
+  "AppBackground": [Function],
+  "NavigationBar": [Function],
+  "SystemBars": [Function],
+  "ThemeAwareStatusBar": [Function],
+  "getThemePreference": [Function],
+  "setAppBackground": [Function],
+  "setNavbarAppearance": [Function],
+  "setThemePreference": [Function],
+  "useThemePreference": [Function],
+}
+`;

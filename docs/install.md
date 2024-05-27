@@ -1,6 +1,6 @@
 # @vonovak/react-native-theme-control
 
-iOS 13 or newer is required for theming logic. However, the package builds with iOS 10 and newer.
+iOS 13 or newer is required for theming logic. However, the package builds with iOS 12 and newer.
 
 Version 4 supports RN 0.72 and Expo 49.
 
@@ -64,7 +64,7 @@ There are manual installation steps that need to be performed:
 
 ### Android
 
-- in `MainApplication.java`:
+- in `MainApplication.kt / java`:
 
 ```diff
 + import eu.reactnativetraining.ThemeControlModule;
@@ -77,7 +77,6 @@ public void onCreate() {
 +  ThemeControlModule.Companion.recoverApplicationTheme(getApplicationContext());
 
   SoLoader.init(this, /* native exopackage */ false);
-  initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
 }
 ```
 
@@ -93,20 +92,101 @@ If you want, `androidxCoreVersion` can be set to the version of the androidx cor
 
 ### iOS
 
-## for RN >= 0.71
+#### Add header search paths
 
-The AppDelegate no longer contains the code that we need to modify to make theming work. Instead, we need to modify the `RCTAppDelegate.mm` file located in `node_modules/react-native/Libraries/AppDelegate`.
+This step usually isn't necessary, but may be required when you use `use_frameworks!` in your Podfile.
 
-Use the same modification as shown below for RN 0.70, and apply it to the node_modules file. Use tools such as `yarn patch` or `patch-package` to maintain the change.
+In that case, we need to add a header search path to the `React-RCTAppDelegate` project target. This can be done in the Podfile:
 
-## for RN <= 0.70
+```
+target 'YourApp' do
+  use_frameworks! :linkage => :static
+  config = use_native_modules!
 
-- in `AppDelegate.m`
+  # ...
+
+  post_install do |installer|
+    installer.pods_project.targets.each do |target|
+      if ["React-RCTAppDelegate"].any? { |t| t == target.name }
+        # PODS_ROOT points to ios/Pods
+        append_header_search_path(target, "$(PODS_ROOT)/some_path/node_modules/@vonovak/react-native-theme-control/ios")
+      end
+    end
+  end
+end
+
+# https://github.com/software-mansion/react-native-svg/issues/2081#issuecomment-1656701180
+def append_header_search_path(target, path)
+  target.build_configurations.each do |config|
+      # Note that there's a space character after `$(inherited)`.
+      config.build_settings["HEADER_SEARCH_PATHS"] ||= "$(inherited) "
+      config.build_settings["HEADER_SEARCH_PATHS"] << path
+  end
+end
+```
+
+#### Modify the AppDelegate
+
+Recovering the application theme involves modification of native files. The following is required:
+
+<details>
+  <summary>for RN >= 0.71</summary>
+
+We need to modify the `RCTAppDelegate.mm` file located in `node_modules/react-native/Libraries/AppDelegate/RCTAppDelegate.mm`.
+
+Use the modification shown below and apply it to the file in node_modules. Use tools such as `yarn patch` or `patch-package` to maintain the change. While it is a bit unusual to patch this file, you will get an efficient theme-switching solution (certainly better than loading the app, waiting to read theme from asyncStorage and re-drawing).
+
+This is a snippet from a RN 0.74 project:
 
 ```diff
-+ #import "RNThemeControl.h"
++// use the one you need
++#if __has_include(<RNThemeControl.h>)
++    #import <RNThemeControl.h>
++#else
++    #import "RNThemeControl.h"
++#endif
 
-//...
+(BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+  // ...
+  if (self.newArchEnabled || self.fabricEnabled) {
+    [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
+  }
+  [self _logWarnIfCreateRootViewWithBridgeIsOverridden];
+  [self customizeRootView:(RCTRootView *)rootView];
+
+  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+  UIViewController *rootViewController = [self createRootViewController];
+
+
++  [RNThemeControl recoverApplicationTheme];
++  // or use this for testing
++  [RNThemeControl forceTheme:UIUserInterfaceStyleDark];
+
+  [self setRootView:rootView toRootViewController:rootViewController];
+  self.window.rootViewController = rootViewController;
+  self.window.windowScene.delegate = self;
+  [self.window makeKeyAndVisible];
+
+  return YES;
+}
+```
+</details>
+
+<details>
+  <summary>for RN <= 0.70</summary>
+
+- in `AppDelegate.m` make the following changes:
+
+```diff
++// use the one you need
++#if __has_include(<RNThemeControl.h>)
++    #import <RNThemeControl.h>
++#else
++    #import "RNThemeControl.h"
++#endif
+
+  // ...
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [UIViewController new];
   rootViewController.view = rootView;
@@ -118,8 +198,9 @@ Use the same modification as shown below for RN 0.70, and apply it to the node_m
   return YES;
 }
 ```
+</details>
 
-If you want to force dark / light theme always, [prefer editing the plist file](https://stackoverflow.com/a/58034262/2070942) or use:
+If you want to force dark / light theme always, [prefer editing the plist file](https://stackoverflow.com/a/58034262/2070942) or use for testing:
 
 `[RNThemeControl forceTheme:UIUserInterfaceStyleDark];`
 

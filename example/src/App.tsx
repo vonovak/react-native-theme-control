@@ -18,7 +18,7 @@ import DocumentPicker from 'react-native-document-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MenuView } from '@react-native-menu/menu';
 import { SimpleScreen } from './SimpleScreen';
-import { AppBackground } from '../../src/AppBackground';
+import { AppBackground } from '@vonovak/react-native-theme-control';
 
 type RootStackParamList = {
   Home: undefined;
@@ -46,15 +46,18 @@ const ScreenOne = ({
   }, [navigation, bgColor, textColor]);
 
   return (
-    <Screen
-      barsBackground={isDarkMode ? '#9900F0' : '#A0BCC2'}
-      bgColor={bgColor}
-      textColor={textColor}
-      dividerColor={dividerColor}
-      navigate={() => {
-        navigation.navigate('ScreenTwo');
-      }}
-    />
+    <>
+      <AppBackground dark={'red'} light={'blue'} />
+      <Screen
+        barsBackground={isDarkMode ? '#9900F0' : '#A0BCC2'}
+        bgColor={bgColor}
+        textColor={textColor}
+        dividerColor={dividerColor}
+        navigate={() => {
+          navigation.navigate('ScreenTwo');
+        }}
+      />
+    </>
   );
 };
 
@@ -82,6 +85,8 @@ const ScreenTwo = ({
         backgroundColor: bgColor,
       }}
     >
+      <AppBackground dark={'pink'} light={'yellow'} />
+
       <SafeAreaView edges={['bottom']} style={{ flex: 1 }}>
         <Screen
           barsBackground={isDarkMode ? '#005555' : '#EE5007'}
@@ -150,7 +155,6 @@ export default function App() {
   return (
     <NavigationContainer>
       <AppStack />
-      <AppBackground dark={'green'} light={'gray'} />
     </NavigationContainer>
   );
 }

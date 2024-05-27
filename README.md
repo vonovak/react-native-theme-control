@@ -4,9 +4,9 @@ Control the native platform theme from React Native.
 
 ✅ Control theme of RN Views, as well as native UI controls (alerts, native menus, date pickers... on both Android and iOS)
 
-✅ Control the color of the ApplicationWindow (iOS) or the current Activity (Android) using [`AppBackground`](https://github.com/vonovak-org/react-native-theme-control/blob/main/docs/readme-internal.md#appbackground)
+✅ Control the color of the UIApplication Window (iOS) and the current Activity (Android) using [`AppBackground`](https://github.com/vonovak-org/react-native-theme-control/blob/main/docs/readme-internal.md#appbackground)
 
-✅ Recover the theme upon app startup
+✅ Recover the previously set theme upon app startup, and apply it before your app starts rendering
 
 ✅ Supports Expo via a config plugin
 
@@ -14,7 +14,7 @@ Control the native platform theme from React Native.
 
 Additionally, provides functionality to control the appearance (background and border color, light / dark buttons) of the Android navbar.
 
-The package is tested with RN >= 0.66.1 (last tested with RN 73, Expo 49). See [RN version support](docs/install.md).
+The package is tested with RN >= 0.66.1 (last tested with RN 74, Expo 51). See [RN version support](docs/install.md).
 
 ### Example
 

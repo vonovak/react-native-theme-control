@@ -82,7 +82,7 @@ RCT_EXPORT_METHOD(setAppBackground:(NSDictionary*) options
   });
 }
 
-- (void) persistTheme: (UIUserInterfaceStyle) style API_AVAILABLE(ios(12.0)) {
+- (void) persistTheme: (UIUserInterfaceStyle) style {
   NSUserDefaults* defaults = NSUserDefaults.standardUserDefaults;
   if (style == UIUserInterfaceStyleUnspecified) {
     [defaults removeObjectForKey:THEME_ENTRY_KEY];
@@ -91,7 +91,7 @@ RCT_EXPORT_METHOD(setAppBackground:(NSDictionary*) options
   }
 }
 
-+ (NSInteger) recoverApplicationTheme {
++ (UIUserInterfaceStyle) recoverApplicationTheme {
   if (@available(iOS 13.0, *)) {
     NSUserDefaults* defaults = NSUserDefaults.standardUserDefaults;
     NSInteger recoveredInt = [defaults integerForKey:THEME_ENTRY_KEY];
@@ -101,12 +101,12 @@ RCT_EXPORT_METHOD(setAppBackground:(NSDictionary*) options
     if (doesHaveStyle) {
       [RNThemeControl forceTheme:recoveredStyle];
     }
-    return recoveredInt;
+    return recoveredStyle;
   }
-  return 0; //UIUserInterfaceStyleUnspecified
+  return UIUserInterfaceStyleUnspecified;
 }
 
-+ (void) forceTheme: (NSInteger) forcedStyle {
++ (void) forceTheme: (UIUserInterfaceStyle) forcedStyle {
   if (@available(iOS 13.0, *)) {
     UIUserInterfaceStyle casted = [RNThemeControl intToUIUserInterfaceStyle:forcedStyle];
     NSArray<UIWindow *> *windows = RCTSharedApplication().windows;
@@ -119,7 +119,7 @@ RCT_EXPORT_METHOD(setAppBackground:(NSDictionary*) options
   }
 }
 
-+ (nullable NSString*) getRCTAppearanceOverride: (UIUserInterfaceStyle) style API_AVAILABLE(ios(12.0)) {
++ (nullable NSString*) getRCTAppearanceOverride: (UIUserInterfaceStyle) style {
   BOOL doNotOverride = style == UIUserInterfaceStyleUnspecified;
   if (doNotOverride) {
     return nil;
@@ -128,7 +128,7 @@ RCT_EXPORT_METHOD(setAppBackground:(NSDictionary*) options
   return forcedStyle;
 }
 
-+ (UIUserInterfaceStyle) intToUIUserInterfaceStyle: (NSInteger) style API_AVAILABLE(ios(12.0)) {
++ (UIUserInterfaceStyle) intToUIUserInterfaceStyle: (NSInteger) style {
     switch(style) {
         case 1:
             return UIUserInterfaceStyleLight;

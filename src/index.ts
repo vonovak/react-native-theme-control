@@ -1,11 +1,19 @@
 import { useEffect, useState } from 'react';
 import EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
-import { SetThemeOptions, ThemeControlModule } from './NativeThemeControl';
+export { type SetThemeOptions } from './spec/NativeThemeControl';
+import {
+  type SetThemeOptions,
+  ThemeControlModule,
+} from './spec/NativeThemeControl';
 import { ThemePreference } from './types';
 
 export * from './SystemBars';
-export { NavigationBar } from './NavigationBar';
-export { AppBackground, type AppBackgroundProps } from './AppBackground';
+export { NavigationBar, setNavbarAppearance } from './NavigationBar';
+export {
+  AppBackground,
+  type AppBackgroundProps,
+  setAppBackground,
+} from './AppBackground';
 export * from './types';
 
 const eventName = 'setThemePreference';

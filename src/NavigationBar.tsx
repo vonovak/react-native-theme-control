@@ -5,8 +5,20 @@ export function NavigationBar(_props: NavigationBarProps) {
   return null;
 }
 
+/**
+ * Set the appearance of the navigation bar imperatively
+ * */
+export const setNavbarAppearance = (_params: NavbarAppearanceParams) =>
+  Promise.resolve(null);
+
+/**
+ * @hidden
+ * */
 NavigationBar.setNavbarAppearance = (
   _params: NavbarAppearanceParams,
 ): Promise<null> => {
-  return Promise.resolve(null);
+  console.warn(
+    'NavigationBar.setNavbarAppearance is deprecated. Use setNavbarAppearance instead.',
+  );
+  return setNavbarAppearance(_params);
 };

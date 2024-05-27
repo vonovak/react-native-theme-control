@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
 import { WithDefault } from 'react-native/Libraries/Types/CodegenTypes';
-import { ThemePreference } from './types';
+import { ThemePreference } from '../types';
 
 type NativeSetNavbarAppearanceParams = {
   backgroundColor: WithDefault<number, null>;
