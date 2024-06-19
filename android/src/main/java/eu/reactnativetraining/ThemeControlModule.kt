@@ -63,7 +63,7 @@ class ThemeControlModule(reactContext: ReactApplicationContext?) :
         activity?.window?.decorView?.setBackgroundColor(appBackground)
       }
     }
-    promise.resolve(activity != null)
+    promise.resolve(activity?.window?.decorView != null)
   }
 
   @ReactMethod

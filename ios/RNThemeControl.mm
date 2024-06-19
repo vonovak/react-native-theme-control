@@ -17,15 +17,13 @@ RCT_EXPORT_MODULE()
 - (instancetype)init {
   self = [super init];
   if (self != nil) {
-    if (@available(iOS 13.0, *)) {
-      if (![NSThread isMainThread]) {
-        RCTLogError(@"RNThemeControl: not inited on the main thread. This should not happen.");
-        self.cachedStyle = UIUserInterfaceStyleUnspecified;
-        return self;
-      }
-      UIUserInterfaceStyle current = UIApplication.sharedApplication.delegate.window.overrideUserInterfaceStyle;
-      self.cachedStyle = current;
+    if (!NSThread.isMainThread) {
+      RCTLogError(@"RNThemeControl: not inited on the main thread. This should not happen.");
+      self.cachedStyle = UIUserInterfaceStyleUnspecified;
+      return self;
     }
+    UIUserInterfaceStyle current = UIApplication.sharedApplication.delegate.window.overrideUserInterfaceStyle;
+    self.cachedStyle = current;
   }
   return self;
 }
@@ -33,14 +31,9 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getThemePreference)
 {
-  if (@available(iOS 13.0, *)) {
-    UIUserInterfaceStyle current = (UIUserInterfaceStyle) self.cachedStyle;
-    NSString* result = [RNThemeControl getRCTAppearanceOverride:current];
-    if (result) {
-      return result;
-    }
-  }
-  return systemThemeName;
+  UIUserInterfaceStyle current = self.cachedStyle;
+  NSString* themePreferenceName = [RNThemeControl getRCTAppearanceOverride:current];
+  return themePreferenceName ?: systemThemeName;
 }
 
 RCT_EXPORT_METHOD(setTheme:(NSString*) themeStyle
@@ -49,21 +42,18 @@ RCT_EXPORT_METHOD(setTheme:(NSString*) themeStyle
                   reject:(RCTPromiseRejectBlock)reject)
 {
 
-  if (@available(iOS 13.0, *)) {
-    NSString* patchedThemeStyle = [systemThemeName isEqualToString:themeStyle] ? @"unspecified" : themeStyle;
-    UIUserInterfaceStyle style = [RCTConvert UIUserInterfaceStyle:patchedThemeStyle];
+  UIUserInterfaceStyle style = [systemThemeName isEqualToString:themeStyle] ? UIUserInterfaceStyleUnspecified : [RCTConvert UIUserInterfaceStyle:themeStyle];
+  self.cachedStyle = style;
 
-    BOOL shouldPersistTheme = options[@"persistTheme"] == nil || [options[@"persistTheme"] boolValue];
-    if (shouldPersistTheme) {
-      [self persistTheme:style];
-    }
-
-    self.cachedStyle = style;
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [RNThemeControl forceTheme:style];
-    });
+  BOOL shouldPersistTheme = options[@"persistTheme"] == nil || [options[@"persistTheme"] boolValue];
+  if (shouldPersistTheme) {
+    [self persistTheme:style];
   }
+
+  dispatch_async(dispatch_get_main_queue(), ^{
+    // NOTE: technically, this part could be replaced with RN-JS appearance call
+    [RNThemeControl forceTheme:style];
+  });
   resolve([NSNull null]);
 }
 
@@ -92,31 +82,25 @@ RCT_EXPORT_METHOD(setAppBackground:(NSDictionary*) options
 }
 
 + (UIUserInterfaceStyle) recoverApplicationTheme {
-  if (@available(iOS 13.0, *)) {
-    NSUserDefaults* defaults = NSUserDefaults.standardUserDefaults;
-    NSInteger recoveredInt = [defaults integerForKey:THEME_ENTRY_KEY];
-    UIUserInterfaceStyle recoveredStyle = [RNThemeControl intToUIUserInterfaceStyle:recoveredInt];
+  NSUserDefaults* defaults = NSUserDefaults.standardUserDefaults;
+  NSInteger recoveredInt = [defaults integerForKey:THEME_ENTRY_KEY];
+  UIUserInterfaceStyle recoveredStyle = [RNThemeControl intToUIUserInterfaceStyle:recoveredInt];
 
-    BOOL doesHaveStyle = recoveredStyle != 0;
-    if (doesHaveStyle) {
-      [RNThemeControl forceTheme:recoveredStyle];
-    }
-    return recoveredStyle;
+  BOOL doesHaveStyle = recoveredStyle != UIUserInterfaceStyleUnspecified;
+  if (doesHaveStyle) {
+    [RNThemeControl forceTheme:recoveredStyle];
   }
-  return UIUserInterfaceStyleUnspecified;
+  return recoveredStyle;
 }
 
 + (void) forceTheme: (UIUserInterfaceStyle) forcedStyle {
-  if (@available(iOS 13.0, *)) {
-    UIUserInterfaceStyle casted = [RNThemeControl intToUIUserInterfaceStyle:forcedStyle];
-    NSArray<UIWindow *> *windows = RCTSharedApplication().windows;
-    for (UIWindow *window in windows) {
-      window.overrideUserInterfaceStyle = casted;
-    }
-    NSString* appearanceOverride = [RNThemeControl getRCTAppearanceOverride:casted];
-    // TODO investigate more into why this call is needed
-    RCTOverrideAppearancePreference(appearanceOverride);
+  NSArray<UIWindow *> *windows = RCTSharedApplication().windows;
+  for (UIWindow *window in windows) {
+    window.overrideUserInterfaceStyle = forcedStyle;
   }
+  NSString* appearanceOverride = [RNThemeControl getRCTAppearanceOverride:forcedStyle];
+  // TODO investigate more into why this call is needed
+  RCTOverrideAppearancePreference(appearanceOverride);
 }
 
 + (nullable NSString*) getRCTAppearanceOverride: (UIUserInterfaceStyle) style {
