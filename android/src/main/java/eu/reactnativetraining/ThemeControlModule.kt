@@ -76,8 +76,10 @@ class ThemeControlModule(reactContext: ReactApplicationContext?) :
       persistTheme(mode)
     }
 
-    UiThreadUtil.runOnUiThread { setMode(mode, restartActivity) }
-    promise.resolve(null)
+    UiThreadUtil.runOnUiThread {
+      setMode(mode, restartActivity)
+      promise.resolve(null)
+    }
   }
 
   private fun setMode(mode: Int, restartActivity: Boolean) {

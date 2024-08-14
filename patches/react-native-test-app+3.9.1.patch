@@ -1,60 +1,51 @@
 diff --git a/node_modules/react-native-test-app/android/app/src/main/AndroidManifest.xml b/node_modules/react-native-test-app/android/app/src/main/AndroidManifest.xml
-index 2aceed6..72ab787 100644
+index 2aceed6..f30df51 100644
 --- a/node_modules/react-native-test-app/android/app/src/main/AndroidManifest.xml
 +++ b/node_modules/react-native-test-app/android/app/src/main/AndroidManifest.xml
-@@ -5,6 +5,7 @@
-     package="com.microsoft.reacttestapp"
- >
-     <uses-feature android:name="android.hardware.camera.any" android:required="false" />
-+    <!-- npx patch-package react-native-test-app -include android/app/src  -->
-
-     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-     <uses-permission android:name="android.permission.CAMERA" android:maxSdkVersion="${rntaEnableCamera}" />
-@@ -23,13 +24,17 @@
+@@ -23,13 +23,16 @@
      >
          <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
-
+ 
 -        <activity android:name="com.microsoft.reacttestapp.MainActivity" android:exported="true">
++        <!-- npx patch-package react-native-test-app -include android/app/src  -->
 +        <activity android:name="com.microsoft.reacttestapp.MainActivity" android:exported="true"
-+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
-+        >
++                  android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode">
              <intent-filter>
                  <action android:name="android.intent.action.MAIN" />
                  <category android:name="android.intent.category.LAUNCHER" />
              </intent-filter>
          </activity>
-
+ 
 -        <activity android:name="com.microsoft.reacttestapp.component.ComponentActivity" />
 +        <activity android:name="com.microsoft.reacttestapp.component.ComponentActivity"
-+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
-+        />
++                  android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"/>
      </application>
  </manifest>
 diff --git a/node_modules/react-native-test-app/android/app/src/main/java/com/microsoft/reacttestapp/MainActivity.kt b/node_modules/react-native-test-app/android/app/src/main/java/com/microsoft/reacttestapp/MainActivity.kt
-index 751f767..e3092d7 100644
+index c1280db..686b853 100644
 --- a/node_modules/react-native-test-app/android/app/src/main/java/com/microsoft/reacttestapp/MainActivity.kt
 +++ b/node_modules/react-native-test-app/android/app/src/main/java/com/microsoft/reacttestapp/MainActivity.kt
-@@ -27,6 +27,7 @@ import com.microsoft.reacttestapp.manifest.Component
+@@ -29,6 +29,7 @@ import com.microsoft.reacttestapp.manifest.Component
  import com.microsoft.reacttestapp.manifest.ManifestProvider
  import com.microsoft.reacttestapp.react.AppRegistry
  import com.microsoft.reacttestapp.react.BundleSource
 +import eu.reactnativetraining.ThemeControlModule
-
+ 
  class MainActivity : ReactActivity() {
-
-@@ -68,7 +69,9 @@ class MainActivity : ReactActivity() {
-     }
-
+ 
+@@ -63,7 +64,9 @@ class MainActivity : ReactActivity() {
+     private var useAppRegistry: Boolean = false
+ 
      override fun onCreate(savedInstanceState: Bundle?) {
 -        super.onCreate(savedInstanceState)
 +        super.onCreate(null)
 +      // npx patch-package react-native-test-app --include android/app/src
 +        ThemeControlModule.Companion.recoverApplicationTheme(this)
-
+ 
          val checksum = ManifestProvider.checksum()
          val manifest = testApp.manifest
 diff --git a/node_modules/react-native-test-app/android/app/src/main/java/com/microsoft/reacttestapp/component/ComponentActivity.kt b/node_modules/react-native-test-app/android/app/src/main/java/com/microsoft/reacttestapp/component/ComponentActivity.kt
-index 745f935..d9b3e76 100644
+index 560519d..8238b63 100644
 --- a/node_modules/react-native-test-app/android/app/src/main/java/com/microsoft/reacttestapp/component/ComponentActivity.kt
 +++ b/node_modules/react-native-test-app/android/app/src/main/java/com/microsoft/reacttestapp/component/ComponentActivity.kt
 @@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
@@ -62,16 +53,17 @@ index 745f935..d9b3e76 100644
  import com.facebook.react.ReactActivityDelegate
  import com.microsoft.reacttestapp.BuildConfig
 +import eu.reactnativetraining.ThemeControlModule
-
+ 
  class ComponentActivity : ReactActivity() {
-
-@@ -35,7 +36,8 @@ class ComponentActivity : ReactActivity() {
-     }
-
+ 
+@@ -33,7 +34,9 @@ class ComponentActivity : ReactActivity() {
+         ComponentActivityDelegate(this, mainComponentName)
+ 
      override fun onCreate(savedInstanceState: Bundle?) {
 -        super.onCreate(savedInstanceState)
 +        super.onCreate(null)
++      // npx patch-package react-native-test-app --include android/app/src
 +        ThemeControlModule.Companion.recoverApplicationTheme(this)
-
+ 
          @Suppress("SENSELESS_COMPARISON")
-         if (BuildConfig.ReactTestApp_singleApp === null) {
+         if (BuildConfig.REACTAPP_SINGLE_APP === null) {
