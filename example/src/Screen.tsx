@@ -131,7 +131,7 @@ export function Screen({
       <Button
         onPress={() => {
           setShow(true);
-          setTimeout(() => setShow(false), 4000);
+          setTimeout(() => setShow(false), 3000);
         }}
         title="open+close date picker"
       />
