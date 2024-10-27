@@ -7,7 +7,6 @@ import {
   useColorScheme,
   View,
   Platform,
-  Switch,
   ColorValue,
 } from 'react-native';
 import {
@@ -40,7 +39,7 @@ export function Screen({
 }: Props) {
   const colorScheme = useColorScheme();
   const isDarkMode = colorScheme === 'dark';
-  const [persistTheme, togglePersistTheme] = React.useReducer(
+  const [persistTheme, _togglePersistTheme] = React.useReducer(
     (state: boolean) => !state,
     true,
   );
@@ -92,23 +91,23 @@ export function Screen({
           navigation.navigate('ModalScreen');
         }}
       />
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-around',
-          width: '100%',
-        }}
-      >
-        <Switch
-          thumbColor={persistTheme ? 'green' : 'grey'}
-          onValueChange={togglePersistTheme}
-          value={persistTheme}
-        />
-        <Text style={textColorStyle}>
-          Persist theme across restarts: {String(persistTheme)}
-        </Text>
-      </View>
+      {/*<View*/}
+      {/*  style={{*/}
+      {/*    flexDirection: 'row',*/}
+      {/*    alignItems: 'center',*/}
+      {/*    justifyContent: 'space-around',*/}
+      {/*    width: '100%',*/}
+      {/*  }}*/}
+      {/*>*/}
+      {/*  <Switch*/}
+      {/*    thumbColor={persistTheme ? 'green' : 'grey'}*/}
+      {/*    onValueChange={togglePersistTheme}*/}
+      {/*    value={persistTheme}*/}
+      {/*  />*/}
+      {/*  <Text style={textColorStyle}>*/}
+      {/*    Persist theme across restarts: {String(persistTheme)}*/}
+      {/*  </Text>*/}
+      {/*</View>*/}
 
       <MenuView
         title="Menu Title"
@@ -151,7 +150,6 @@ export function Screen({
           value={new Date()}
           mode={'date'}
           is24Hour={true}
-          onChange={undefined}
           style={{ width: '100%', height: 200 }}
           display={'spinner'}
         />

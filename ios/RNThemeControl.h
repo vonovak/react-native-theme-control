@@ -13,8 +13,6 @@ RCTBridgeModule
 #endif
 >
 
-@property (nonatomic) UIUserInterfaceStyle cachedStyle;
-
 + (UIUserInterfaceStyle) recoverApplicationTheme;
 + (void) forceTheme: (UIUserInterfaceStyle) forcedStyle;
 
