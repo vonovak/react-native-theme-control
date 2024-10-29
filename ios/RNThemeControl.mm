@@ -4,6 +4,7 @@
 
 static NSString *const THEME_ENTRY_KEY = @"RNThemeControl";
 static NSString *const systemThemeName = @"system";
+static UIUserInterfaceStyle cachedStyle = UIUserInterfaceStyleUnspecified;
 
 @implementation RNThemeControl
 
@@ -11,27 +12,12 @@ RCT_EXPORT_MODULE()
 
 + (BOOL)requiresMainQueueSetup
 {
-    return YES;
+    return NO;
 }
-
-- (instancetype)init {
-  self = [super init];
-  if (self != nil) {
-    if (!NSThread.isMainThread) {
-      RCTLogError(@"RNThemeControl: not inited on the main thread. This should not happen.");
-      self.cachedStyle = UIUserInterfaceStyleUnspecified;
-      return self;
-    }
-    UIUserInterfaceStyle current = UIApplication.sharedApplication.delegate.window.overrideUserInterfaceStyle;
-    self.cachedStyle = current;
-  }
-  return self;
-}
-
 
 RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getThemePreference)
 {
-  UIUserInterfaceStyle current = self.cachedStyle;
+  UIUserInterfaceStyle current = cachedStyle;
   NSString* themePreferenceName = [RNThemeControl getRCTAppearanceOverride:current];
   return themePreferenceName ?: systemThemeName;
 }
@@ -43,8 +29,6 @@ RCT_EXPORT_METHOD(setTheme:(NSString*) themeStyle
 {
 
   UIUserInterfaceStyle style = [systemThemeName isEqualToString:themeStyle] ? UIUserInterfaceStyleUnspecified : [RCTConvert UIUserInterfaceStyle:themeStyle];
-  self.cachedStyle = style;
-
   BOOL shouldPersistTheme = options[@"persistTheme"] == nil || [options[@"persistTheme"] boolValue];
   if (shouldPersistTheme) {
     [self persistTheme:style];
@@ -94,6 +78,8 @@ RCT_EXPORT_METHOD(setAppBackground:(NSDictionary*) options
 }
 
 + (void) forceTheme: (UIUserInterfaceStyle) forcedStyle {
+  cachedStyle = forcedStyle;
+
   NSArray<UIWindow *> *windows = RCTSharedApplication().windows;
   for (UIWindow *window in windows) {
     window.overrideUserInterfaceStyle = forcedStyle;

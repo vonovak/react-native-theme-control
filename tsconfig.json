@@ -17,6 +17,7 @@
     "noStrictGenericChecks": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "exactOptionalPropertyTypes": true,
     "resolveJsonModule": true,
     "noUncheckedIndexedAccess": true,
     "skipLibCheck": true,

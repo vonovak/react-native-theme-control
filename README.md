@@ -46,15 +46,9 @@ The library api is documented in detail [here](./docs/readme-internal.md).
 
 More usage examples can be found [in the example project](./example).
 
-## This Package Was Sponsorware 💰💰💰
+### Say thanks
 
-This package was only available to my GitHub Sponsors, but is now publicly available [tweet](https://twitter.com/vonovak/status/1671786982136004609).
-
-Enjoy, and thanks for the support! ❤️
-
-Sponsorware idea is not mine, learn more about **Sponsorware** at [github.com/sponsorware/docs](https://github.com/sponsorware/docs) 💰.
-
-I simply adopted it because making open source is a lot of fun but is not sustainable without compensation.
+If you find the package useful, consider giving a star to the repository or [sponsoring](https://github.com/sponsors/vonovak?frequency=one-time&sponsor=vonovak).
 
 ### Credits
 
