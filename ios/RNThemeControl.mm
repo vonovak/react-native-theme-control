@@ -80,7 +80,7 @@ RCT_EXPORT_METHOD(setAppBackground:(NSDictionary*) options
 + (void) forceTheme: (UIUserInterfaceStyle) forcedStyle {
   cachedStyle = forcedStyle;
 
-  NSArray<UIWindow *> *windows = RCTSharedApplication().windows;
+  NSArray<UIWindow *> *windows = UIApplication.sharedApplication.windows;
   for (UIWindow *window in windows) {
     window.overrideUserInterfaceStyle = forcedStyle;
   }
