@@ -11,13 +11,13 @@
     "fix-deps": "expo install --check"
   },
   "dependencies": {
-    "@react-native-community/datetimepicker": "8.4.2",
+    "@react-native-community/datetimepicker": "8.4.1",
     "@react-native-menu/menu": "^1.2.3",
     "@react-native-segmented-control/segmented-control": "2.5.7",
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/native-stack": "^6.9.26",
     "@vonovak/react-native-theme-control": "portal:../",
-    "expo": "~53.0.17",
+    "expo": "^53",
     "expo-dev-client": "~5.2.4",
     "expo-splash-screen": "~0.30.10",
     "expo-status-bar": "~2.2.3",
