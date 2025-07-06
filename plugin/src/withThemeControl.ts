@@ -5,6 +5,8 @@ import {
   withDangerousMod,
   withMainActivity,
   withAppDelegate,
+  withPlugins,
+  withInfoPlist,
 } from 'expo/config-plugins';
 import { readFileSync, writeFileSync } from 'fs';
 import { sync as globSync } from 'glob';
@@ -21,6 +23,8 @@ type ThemeConfigPlugin = ConfigPlugin<Options>;
 
 const withMainActivityThemeRecovery: ThemeConfigPlugin = (config, options) => {
   return withMainActivity(config, (config) => {
+    checkSystemUi(config.modRequest.projectRoot);
+
     const src = addImports(
       config.modResults.contents,
       ['eu.reactnativetraining.ThemeControlModule'],
@@ -112,19 +116,44 @@ function patchBridgingHeader(projectRoot: string) {
     );
   }
 }
+const withUserInterfaceStyle: ConfigPlugin<void> = (config) => {
+  return withInfoPlist(config, (config) => {
+    config.modResults = {
+      ...config.modResults,
+      UIUserInterfaceStyle: 'Automatic',
+    };
+    return config;
+  });
+};
+
+const checkSystemUi = (projectRoot: string) => {
+  if (resolveFrom(projectRoot, 'expo-system-ui')) {
+    throw new Error(
+      `${themeControlName}: expo-system-ui is not compatible with react-native-theme-control (which covers system-ui functionality), please remove expo-system-ui from your project.
+      The author of react-native-theme-control is working on a solution to improve this.`,
+    );
+  }
+};
 
 const withIosPlugin: ThemeConfigPlugin = (config, options) => {
   config = insertThemeRecovery(config, options);
-  return withDangerousMod(config, [
-    'ios',
-    (config) => {
-      const projectRoot = config.modRequest.projectRoot;
-      patchExpoDevLauncherController(projectRoot);
 
-      patchBridgingHeader(projectRoot);
+  return withPlugins(config, [
+    (cfg) => withUserInterfaceStyle(cfg),
+    (cfg) =>
+      withDangerousMod(cfg, [
+        'ios',
+        (config) => {
+          const projectRoot = config.modRequest.projectRoot;
 
-      return config;
-    },
+          checkSystemUi(projectRoot);
+          patchExpoDevLauncherController(projectRoot);
+
+          patchBridgingHeader(projectRoot);
+
+          return config;
+        },
+      ]),
   ]);
 };
 function patchExpoDevLauncherController(projectRoot: string) {
@@ -210,6 +239,7 @@ const withThemeControl: ThemeConfigPlugin = (config, options = {}) => {
       `${themeControlName}: Invalid mode "${options.mode}". Valid modes are "userPreference", "light" and "dark".`,
     );
   }
+
   config = withIosPlugin(config, options);
   config = withMainActivityThemeRecovery(config, options);
   return config;
