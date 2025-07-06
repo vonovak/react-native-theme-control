@@ -1,18 +1,19 @@
 # @vonovak/react-native-theme-control
 
-iOS 13 or newer is required.
+Version >= 7 supports RN 0.79+ and Expo 53+
 
-Version >= 7 supports RN 0.79 and Expo 53.
+## Table of Contents
 
-Version 5 & 6 supports RN 0.73 and Expo 50.
-
-Version 4 supports RN 0.72 and Expo 49.
-
-Version 3 supports RN 0.71 and Expo 48.
-
-Version 2 supports RN 0.70 and Expo 47.
-
-For version 1, the minimum required RN version is 0.66.1. Version 1 can also be used with Expo >=45 and < 47.
+- [Installation](#installation)
+  - [Expo](#expo)
+  - [Native files setup](#native-files-setup)
+    - [Android](#android)
+    - [iOS](#ios)
+      - [Modify the AppDelegate](#modify-the-appdelegate)
+- [Usage example](#usage-example)
+- [Troubleshooting](#troubleshooting)
+  - [Android activity restarts upon theme change](#android-activity-restarts-upon-theme-change)
+  - [Android scroll bar's color is not changing](#android-scroll-bars-color-is-not-changing)
 
 ## Installation
 
@@ -28,75 +29,96 @@ npm i @vonovak/react-native-theme-control
 
 ### Expo
 
-If you want to enable theme persistence across app restarts, or force a light / dark mode, add `@vonovak/react-native-theme-control` to the `plugins` entry in expo config file.
+If you want to enable theme persistence across app restarts, or force a light / dark mode, add `@vonovak/react-native-theme-control` to the `plugins` entry in your Expo config file.
 
-For example, the following will enable theme persistence across app restarts.
+For example, the following will enable theme persistence across app restarts:
 
-`"plugins": ["@vonovak/react-native-theme-control"]`
-
-If you want to force light / dark mode always, to resolve issues [like this](https://github.com/react-native-datetimepicker/datetimepicker/issues/746) then specify the theme like this:
-
-```
-"plugins": [
-  [
-    "@vonovak/react-native-theme-control", {
-      "mode": "light"
-    }
-  ]
-]
+```json
+{
+  "expo": {
+    "plugins": ["@vonovak/react-native-theme-control"]
+  }
+}
 ```
 
-The `mode` values are `'light' | 'dark' | 'userPreference'` ('userPreference') is default.
+If you want to force light / dark mode always, to resolve issues [like this](https://github.com/react-native-datetimepicker/datetimepicker/issues/746), then specify the theme like this:
 
-Finally, run `npx expo prebuild --clean` and rebuild your iOS and Android projects.
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "@vonovak/react-native-theme-control",
+        {
+          "mode": "light"
+        }
+      ]
+    ]
+  }
+}
+```
 
-## Native files setup:
+**Available mode values:**
 
-**Do not do this if you're using the Expo config plugin!**
+- `'light'` - Forces light mode
+- `'dark'` - Forces dark mode
+- `'userPreference'` - Uses system preference (default)
+
+After configuring the plugin, run `npx expo prebuild --clean` and rebuild your iOS and Android projects.
+
+### Native files setup
+
+**⚠️ Do not do this if you're using Expo!**
 
 There are manual installation steps that need to be performed in vanilla React Native Projects:
 
-### Android
+#### Android
 
-- in `MainApplication.kt / java`:
+Add the following to your `MainApplication.kt` (or `MainApplication.java`):
 
-```diff
-+ import eu.reactnativetraining.ThemeControlModule;
+```kotlin
+import eu.reactnativetraining.ThemeControlModule;
 
 //...
 
 @Override
 public void onCreate() {
   super.onCreate();
-+  ThemeControlModule.Companion.recoverApplicationTheme(getApplicationContext());
+  ThemeControlModule.Companion.recoverApplicationTheme(applicationContext);
 
   SoLoader.init(this, /* native exopackage */ false);
 }
 ```
 
-If you want to force dark / light theme always, use:
+**Forcing specific themes:**
 
-`ThemeControlModule.Companion.forceTheme(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES);`
+To force dark mode:
 
-or
+```kotlin
+ThemeControlModule.Companion.forceTheme(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES);
+```
 
-`ThemeControlModule.Companion.forceTheme(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO);`
+To force light mode:
 
-If you want, `androidxCoreVersion` can be set to the version of the androidx core you want to use.
+```kotlin
+ThemeControlModule.Companion.forceTheme(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO);
+```
 
-### iOS
+**Note:** You can optionally set `androidxCoreVersion` to specify the version of androidx core you want to use.
 
-#### Modify the AppDelegate
+#### iOS
+
+##### Modify the AppDelegate
 
 Recovering the application theme involves modification of native files. The following is required:
 
-1) Add this in the project's bridging header file (usually `ios/YourProjectName-Bridging-Header.h`):
+1. **Add to bridging header** (usually `ios/YourProjectName-Bridging-Header.h`):
 
 ```objc
 #import <RNThemeControl.h>
 ```
 
-2) In `AppDelegate.swift` didFinishLaunchingWithOptions:
+2. **Modify AppDelegate.swift** in `didFinishLaunchingWithOptions`:
 
 ```diff
 #if os(iOS) || os(tvOS)
@@ -109,9 +131,15 @@ Recovering the application theme involves modification of native files. The foll
 #endif
 ```
 
-If you want to force dark / light theme always, [prefer editing the plist file](https://stackoverflow.com/a/58034262/2070942) or use for testing:
+**Forcing specific themes:**
 
-`RNThemeControl.forceTheme`
+For testing purposes, you can use:
+
+```objc
+RNThemeControl.forceTheme
+```
+
+However, for production apps, it's recommended to [edit the plist file](https://stackoverflow.com/a/58034262/2070942) instead.
 
 ## Usage example
 
@@ -175,21 +203,21 @@ export function SimpleScreen() {
 
 ## Troubleshooting
 
-#### Android activity restarts upon theme change
+### Android activity restarts upon theme change
 
 Make sure that inside the `AndroidManifest.xml` file, the `android:configChanges` include `uiMode`. For example:
 
-```
+```xml
 android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
 ```
 
-Note, however, that restarting the activity might be necessary for some theme-related changes to occur, for example, for [PlatformColor](https://reactnative.dev/docs/platformcolor) changes to take effect.
+**Note:** Restarting the activity might be necessary for some theme-related changes to occur, for example, for [PlatformColor](https://reactnative.dev/docs/platformcolor) changes to take effect.
 
-#### Android scroll bar's color is not changing
+### Android scroll bar's color is not changing
 
 The list components might need to re-render once the theme changes for the scroll bars to re-draw.
 
-For example, if you're using `FlatList`, you can add a `key` prop to it, and change the value of the `key` prop when the theme changes. For example:
+For example, if you're using `FlatList`, you can add a `key` prop to it, and change the value of the `key` prop when the theme changes:
 
 ```tsx
 const colorScheme = useColorScheme();
