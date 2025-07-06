@@ -129,7 +129,7 @@ const withUserInterfaceStyle: ConfigPlugin<void> = (config) => {
 const checkSystemUi = (projectRoot: string) => {
   if (resolveFrom(projectRoot, 'expo-system-ui')) {
     throw new Error(
-      `${themeControlName}: expo-system-ui is not compatible with react-native-theme-control (which covers system-ui functionality), please remove expo-system-ui from your project.
+      `${themeControlName}: expo-system-ui is not compatible with react-native-theme-control (which covers system-ui functionality), remove expo-system-ui from your project.
       The author of react-native-theme-control is working on a solution to improve this.`,
     );
   }
