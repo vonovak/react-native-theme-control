@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
 export { type SetThemeOptions } from './spec/NativeThemeControl';
 import {
   type SetThemeOptions,
   ThemeControlModule,
 } from './spec/NativeThemeControl';
 import { ThemePreference } from './types';
+import { ThemeEventEmitter } from './ThemeEventEmitter';
 
 export * from './SystemBars';
 export { NavigationBar, setNavbarAppearance } from './NavigationBar';
@@ -16,9 +16,7 @@ export {
 } from './AppBackground';
 export * from './types';
 
-const eventName = 'setThemePreference';
-
-const themeSwitchEventEmitter = new EventEmitter();
+const themeSwitchEventEmitter = new ThemeEventEmitter();
 
 export function setThemePreference(
   style: ThemePreference,
@@ -26,7 +24,7 @@ export function setThemePreference(
 ): void {
   ThemeControlModule.setTheme(style, options)
     .then(() => {
-      themeSwitchEventEmitter.emit(eventName, style);
+      themeSwitchEventEmitter.emit(style);
     })
     .catch(console.error);
 }
@@ -38,14 +36,9 @@ export const useThemePreference = (): ThemePreference => {
     useState<ThemePreference>(getThemePreference);
 
   useEffect(() => {
-    const subscription = themeSwitchEventEmitter.addListener(
-      eventName,
-      setPreference,
-    );
+    const subscription = themeSwitchEventEmitter.addListener(setPreference);
 
-    return () => {
-      subscription.remove();
-    };
+    return subscription.remove;
   }, []);
 
   return themePreference;
