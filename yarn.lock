@@ -6782,9 +6782,9 @@ __metadata:
     typedoc-plugin-markdown: "npm:^4.0.3"
     typescript: "npm:^5.8.3"
   peerDependencies:
-    expo: ">=49.0.0"
+    expo: ">=53.0.0"
     react: ">=19.0.0"
-    react-native: ">=0.72.0"
+    react-native: ">=0.79.0"
   peerDependenciesMeta:
     expo:
       optional: true
