@@ -1,8 +1,10 @@
 # @vonovak/react-native-theme-control
 
-iOS 13 or newer is required for theming logic. However, the package builds with iOS 12 and newer.
+iOS 13 or newer is required.
 
-Version >=5 supports RN 0.73 and Expo 50.
+Version >= 7 supports RN 0.79 and Expo 53.
+
+Version 5 & 6 supports RN 0.73 and Expo 50.
 
 Version 4 supports RN 0.72 and Expo 49.
 
@@ -24,21 +26,9 @@ OR
 npm i @vonovak/react-native-theme-control
 ```
 
-Then, run `npx pod-install` and rebuild your iOS and Android projects.
-
 ### Expo
 
-First, make sure that `userInterfaceStyle` in `expo` entry in expo config file is set to `automatic` and install `expo-system-ui` [as documented](https://docs.expo.dev/develop/user-interface/color-themes/#configuration).
-
-```json
-{
-  "expo": {
-    "userInterfaceStyle": "automatic"
-  }
-}
-```
-
-then, only if you want to enable theme persistence across app restarts, or force a light / dark mode, add `@vonovak/react-native-theme-control` to the `plugins` entry in expo config file.
+If you want to enable theme persistence across app restarts, or force a light / dark mode, add `@vonovak/react-native-theme-control` to the `plugins` entry in expo config file.
 
 For example, the following will enable theme persistence across app restarts.
 
@@ -58,11 +48,13 @@ If you want to force light / dark mode always, to resolve issues [like this](htt
 
 The `mode` values are `'light' | 'dark' | 'userPreference'` ('userPreference') is default.
 
+Finally, run `npx expo prebuild --clean` and rebuild your iOS and Android projects.
+
 ## Native files setup:
 
-There are manual installation steps that need to be performed:
-
 **Do not do this if you're using the Expo config plugin!**
+
+There are manual installation steps that need to be performed in vanilla React Native Projects:
 
 ### Android
 
@@ -94,121 +86,32 @@ If you want, `androidxCoreVersion` can be set to the version of the androidx cor
 
 ### iOS
 
-#### Add header search paths
-
-This step usually isn't necessary, but may be required when you use `use_frameworks!` in your Podfile.
-
-In that case, we need to add a header search path to the `React-RCTAppDelegate` project target. This can be done in the Podfile:
-
-```
-target 'YourApp' do
-  use_frameworks! :linkage => :static
-  config = use_native_modules!
-
-  # ...
-
-  post_install do |installer|
-    installer.pods_project.targets.each do |target|
-      if ["React-RCTAppDelegate"].any? { |t| t == target.name }
-        # PODS_ROOT points to ios/Pods
-        append_header_search_path(target, "$(PODS_ROOT)/some_path/node_modules/@vonovak/react-native-theme-control/ios")
-      end
-    end
-  end
-end
-
-# https://github.com/software-mansion/react-native-svg/issues/2081#issuecomment-1656701180
-def append_header_search_path(target, path)
-  target.build_configurations.each do |config|
-      # Note that there's a space character after `$(inherited)`.
-      config.build_settings["HEADER_SEARCH_PATHS"] ||= "$(inherited) "
-      config.build_settings["HEADER_SEARCH_PATHS"] << path
-  end
-end
-```
-
 #### Modify the AppDelegate
 
 Recovering the application theme involves modification of native files. The following is required:
 
-<details>
-  <summary>for RN >= 0.71</summary>
+1) Add this in the project's bridging header file (usually `ios/YourProjectName-Bridging-Header.h`):
 
-We need to modify the `RCTAppDelegate.mm` file located in `node_modules/react-native/Libraries/AppDelegate/RCTAppDelegate.mm`.
+```objc
+#import <RNThemeControl.h>
+```
 
-Use the modification shown below and apply it to the file in node_modules. Use tools such as `yarn patch` or `patch-package` to maintain the change. While it is a bit unusual to patch this file, you will get an efficient theme-switching solution (certainly better than loading the app, waiting to read theme from asyncStorage and re-drawing).
-
-This is a snippet from a RN 0.74 project:
+2) In `AppDelegate.swift` didFinishLaunchingWithOptions:
 
 ```diff
-+// use the one you need
-+#if __has_include(<RNThemeControl.h>)
-+    #import <RNThemeControl.h>
-+#else
-+    #import "RNThemeControl.h"
-+#endif
-
-(BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
-  // ...
-  if (self.newArchEnabled || self.fabricEnabled) {
-    [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
-  }
-  [self _logWarnIfCreateRootViewWithBridgeIsOverridden];
-  [self customizeRootView:(RCTRootView *)rootView];
-
-  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-  UIViewController *rootViewController = [self createRootViewController];
-
-
-+  [RNThemeControl recoverApplicationTheme];
-+  // or use this for testing
-+  [RNThemeControl forceTheme:UIUserInterfaceStyleDark];
-
-  [self setRootView:rootView toRootViewController:rootViewController];
-  self.window.rootViewController = rootViewController;
-  self.window.windowScene.delegate = self;
-  [self.window makeKeyAndVisible];
-
-  return YES;
-}
+#if os(iOS) || os(tvOS)
+    window = UIWindow(frame: UIScreen.main.bounds)
++    RNThemeControl.recoverApplicationTheme()
+    factory.startReactNative(
+      withModuleName: "main",
+      in: window,
+      launchOptions: launchOptions)
+#endif
 ```
-</details>
-
-<details>
-  <summary>for RN <= 0.70</summary>
-
-- in `AppDelegate.m` make the following changes:
-
-```diff
-+// use the one you need
-+#if __has_include(<RNThemeControl.h>)
-+    #import <RNThemeControl.h>
-+#else
-+    #import "RNThemeControl.h"
-+#endif
-
-  // ...
-  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-  UIViewController *rootViewController = [UIViewController new];
-  rootViewController.view = rootView;
-+  [RNThemeControl recoverApplicationTheme];
-
-  self.window.rootViewController = rootViewController;
-  [self.window makeKeyAndVisible];
-
-  return YES;
-}
-```
-</details>
 
 If you want to force dark / light theme always, [prefer editing the plist file](https://stackoverflow.com/a/58034262/2070942) or use for testing:
 
-`[RNThemeControl forceTheme:UIUserInterfaceStyleDark];`
-
-or
-
-`[RNThemeControl forceTheme:UIUserInterfaceStyleLight];`
+`RNThemeControl.forceTheme`
 
 ## Usage example
 
@@ -274,13 +177,13 @@ export function SimpleScreen() {
 
 #### Android activity restarts upon theme change
 
-Make sure that inside of the `AndroidManifest.xml` file, the `android:configChanges` include `uiMode`. For example:
+Make sure that inside the `AndroidManifest.xml` file, the `android:configChanges` include `uiMode`. For example:
 
 ```
 android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
 ```
 
-Note, however, that restarting the activity might be necessary for some theme-related changes to occur, for example for [PlatformColor](https://reactnative.dev/docs/platformcolor) changes to take effect.
+Note, however, that restarting the activity might be necessary for some theme-related changes to occur, for example, for [PlatformColor](https://reactnative.dev/docs/platformcolor) changes to take effect.
 
 #### Android scroll bar's color is not changing
 

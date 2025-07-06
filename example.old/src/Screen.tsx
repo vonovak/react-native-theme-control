@@ -7,7 +7,6 @@ import {
   useColorScheme,
   View,
   Platform,
-  Switch,
   ColorValue,
 } from 'react-native';
 import {
@@ -21,6 +20,7 @@ import { MenuView } from '@react-native-menu/menu';
 import SegmentedControl from '@react-native-segmented-control/segmented-control/js/SegmentedControl.js';
 import { useState } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useNavigation } from '@react-navigation/native';
 
 type Props = {
   barsBackground: ColorValue;
@@ -39,7 +39,7 @@ export function Screen({
 }: Props) {
   const colorScheme = useColorScheme();
   const isDarkMode = colorScheme === 'dark';
-  const [persistTheme, togglePersistTheme] = React.useReducer(
+  const [persistTheme, _togglePersistTheme] = React.useReducer(
     (state: boolean) => !state,
     true,
   );
@@ -51,8 +51,12 @@ export function Screen({
 
   const values: Array<ThemePreference> = ['light', 'dark', 'system'];
   const changeAppearance = (newAppearance: string) => {
-    setThemePreference(newAppearance as ThemePreference, { persistTheme });
+    setThemePreference(newAppearance as ThemePreference, {
+      persistTheme,
+    });
   };
+
+  const navigation = useNavigation();
 
   return (
     <View
@@ -80,24 +84,30 @@ export function Screen({
       <Text style={textColorStyle}>
         useThemePreference(): {themePreference}
       </Text>
-
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-around',
-          width: '100%',
+      <Button
+        title="open ModalScreen"
+        onPress={() => {
+          // @ts-ignore
+          navigation.navigate('ModalScreen');
         }}
-      >
-        <Switch
-          thumbColor={persistTheme ? 'green' : 'grey'}
-          onValueChange={togglePersistTheme}
-          value={persistTheme}
-        />
-        <Text style={textColorStyle}>
-          Persist theme across restarts: {String(persistTheme)}
-        </Text>
-      </View>
+      />
+      {/*<View*/}
+      {/*  style={{*/}
+      {/*    flexDirection: 'row',*/}
+      {/*    alignItems: 'center',*/}
+      {/*    justifyContent: 'space-around',*/}
+      {/*    width: '100%',*/}
+      {/*  }}*/}
+      {/*>*/}
+      {/*  <Switch*/}
+      {/*    thumbColor={persistTheme ? 'green' : 'grey'}*/}
+      {/*    onValueChange={togglePersistTheme}*/}
+      {/*    value={persistTheme}*/}
+      {/*  />*/}
+      {/*  <Text style={textColorStyle}>*/}
+      {/*    Persist theme across restarts: {String(persistTheme)}*/}
+      {/*  </Text>*/}
+      {/*</View>*/}
 
       <MenuView
         title="Menu Title"
@@ -120,7 +130,7 @@ export function Screen({
       <Button
         onPress={() => {
           setShow(true);
-          setTimeout(() => setShow(false), 4000);
+          setTimeout(() => setShow(false), 3000);
         }}
         title="open+close date picker"
       />

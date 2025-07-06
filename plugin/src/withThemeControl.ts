@@ -4,10 +4,14 @@ import {
   ConfigPlugin,
   withDangerousMod,
   withMainActivity,
+  withAppDelegate,
+  withPlugins,
+  withInfoPlist,
 } from 'expo/config-plugins';
 import { readFileSync, writeFileSync } from 'fs';
 import { sync as globSync } from 'glob';
 import * as path from 'path';
+import resolveFrom from 'resolve-from';
 
 const themeControlName = '@vonovak/react-native-theme-control';
 const themeRecoveryTag = '-theme-recovery';
@@ -16,14 +20,21 @@ type Options = {
   mode?: 'userPreference' | 'light' | 'dark';
 };
 type ThemeConfigPlugin = ConfigPlugin<Options>;
+
 const withMainActivityThemeRecovery: ThemeConfigPlugin = (config, options) => {
   return withMainActivity(config, (config) => {
+    checkSystemUi(config.modRequest.projectRoot);
+
     const src = addImports(
       config.modResults.contents,
       ['eu.reactnativetraining.ThemeControlModule'],
       config.modResults.language === 'java',
     );
 
+    const ctxSource =
+      config.modResults.language === 'java'
+        ? 'getApplicationContext()'
+        : 'applicationContext';
     const themeRecoveryCode = (() => {
       if (options.mode === 'light') {
         return 'ThemeControlModule.Companion.forceTheme(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO);';
@@ -31,7 +42,7 @@ const withMainActivityThemeRecovery: ThemeConfigPlugin = (config, options) => {
       if (options.mode === 'dark') {
         return 'ThemeControlModule.Companion.forceTheme(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES);';
       }
-      return 'ThemeControlModule.Companion.recoverApplicationTheme(getApplicationContext());';
+      return `ThemeControlModule.Companion.recoverApplicationTheme(${ctxSource});`;
     })();
 
     config.modResults.contents = mergeContents({
@@ -47,66 +58,102 @@ const withMainActivityThemeRecovery: ThemeConfigPlugin = (config, options) => {
   });
 };
 
-const addImportToAppDelegate = (src: string) => {
-  return mergeContents({
-    tag: themeControlName + '-import',
-    src,
-    newSrc: `#if __has_include(<RNThemeControl.h>)
-    #import <RNThemeControl.h>
-#else
-    #import "RNThemeControl.h"
-#endif`,
-    anchor: /#import "RCTAppDelegate.h"/,
-    offset: 1,
-    comment: '//',
-  });
-};
-const addHeaderSearchPath = (src: string) => {
-  const pkgLocation = path.dirname(
-    require.resolve(`${themeControlName}/package.json`),
-  );
+const insertThemeRecovery: ThemeConfigPlugin = (config, options) => {
+  return withAppDelegate(config, (config) => {
+    const themeRecoveryCode = (() => {
+      if (options.mode === 'light') {
+        return 'RNThemeControl.forceTheme(UIUserInterfaceStyle.light)';
+      }
+      if (options.mode === 'dark') {
+        return 'RNThemeControl.forceTheme(UIUserInterfaceStyle.dark)';
+      }
+      return 'RNThemeControl.recoverApplicationTheme()';
+    })();
 
-  return mergeContents({
-    tag: themeControlName + '-header',
-    src,
-    newSrc: `"${pkgLocation}/ios",`,
-    anchor: /header_search_paths = \[/,
-    offset: 1,
-    comment: '#',
+    config.modResults.contents = mergeContents({
+      src: config.modResults.contents,
+      tag: themeControlName + themeRecoveryTag,
+      newSrc: `    ${themeRecoveryCode}`,
+      anchor: /window = UIWindow\(frame: UIScreen\.main\.bounds\)/,
+      offset: 1,
+      comment: '//',
+    }).contents;
+
+    return config;
   });
 };
 
-const addThemeRecovery = (src: string, options: Options) => {
-  const themeRecoveryCode = (() => {
-    if (options.mode === 'light') {
-      return '[RNThemeControl forceTheme:UIUserInterfaceStyleLight];';
-    }
-    if (options.mode === 'dark') {
-      return '[RNThemeControl forceTheme:UIUserInterfaceStyleDark];';
-    }
-    return '[RNThemeControl recoverApplicationTheme];';
-  })();
-
-  return mergeContents({
-    tag: themeControlName + themeRecoveryTag,
-    src,
-    newSrc: themeRecoveryCode,
-    anchor: /rootViewController.view = rootView;/,
-    offset: 1,
-    comment: '//',
+function patchBridgingHeader(projectRoot: string) {
+  const iosPath = path.join(projectRoot, 'ios');
+  const bridgingHeaders = globSync('**/*-Bridging-Header.h', {
+    absolute: true,
+    cwd: iosPath,
+    ignore: [],
   });
+
+  if (bridgingHeaders.length === 0) {
+    throw new Error(
+      `${themeControlName}: Could not find bridging header in ${iosPath}. Please ensure your project has a bridging header file.`,
+    );
+  }
+
+  const bridgingHeaderPath = bridgingHeaders[0];
+
+  try {
+    const bridgingHeaderContent = readFileSync(bridgingHeaderPath, 'utf8');
+
+    // Check if the import already exists
+    if (!bridgingHeaderContent.includes('#import <RNThemeControl.h>')) {
+      const updatedContent =
+        bridgingHeaderContent +
+        '\n// Added by RNTC config plugin\n#import <RNThemeControl.h>';
+
+      writeFileSync(bridgingHeaderPath, updatedContent, 'utf8');
+    }
+  } catch (err) {
+    throw new Error(
+      `${themeControlName}: Could not modify bridging header at ${bridgingHeaderPath}: ${err}`,
+    );
+  }
+}
+const withUserInterfaceStyle: ConfigPlugin<void> = (config) => {
+  return withInfoPlist(config, (config) => {
+    config.modResults = {
+      ...config.modResults,
+      UIUserInterfaceStyle: 'Automatic',
+    };
+    return config;
+  });
+};
+
+const checkSystemUi = (projectRoot: string) => {
+  if (resolveFrom(projectRoot, 'expo-system-ui')) {
+    throw new Error(
+      `${themeControlName}: expo-system-ui is not compatible with react-native-theme-control (which covers system-ui functionality), remove expo-system-ui from your project.
+      The author of react-native-theme-control is working on a solution to improve this.`,
+    );
+  }
 };
 
 const withIosPlugin: ThemeConfigPlugin = (config, options) => {
-  return withDangerousMod(config, [
-    'ios',
-    (config) => {
-      const projectRoot = config.modRequest.projectRoot;
-      patchExpoDevLauncherController(projectRoot);
-      patchAppDelegate(projectRoot, options);
-      patchPodspecForUseFrameworks(projectRoot);
-      return config;
-    },
+  config = insertThemeRecovery(config, options);
+
+  return withPlugins(config, [
+    (cfg) => withUserInterfaceStyle(cfg),
+    (cfg) =>
+      withDangerousMod(cfg, [
+        'ios',
+        (config) => {
+          const projectRoot = config.modRequest.projectRoot;
+
+          checkSystemUi(projectRoot);
+          patchExpoDevLauncherController(projectRoot);
+
+          patchBridgingHeader(projectRoot);
+
+          return config;
+        },
+      ]),
   ]);
 };
 function patchExpoDevLauncherController(projectRoot: string) {
@@ -127,31 +174,6 @@ function patchExpoDevLauncherController(projectRoot: string) {
   }
 }
 
-function patchAppDelegate(projectRoot: string, options: Options) {
-  const rctAppDelegatePath = getAppDelegateFilePath(
-    projectRoot,
-    'RCTAppDelegate.@(m|mm)',
-  );
-  const withThemeControlImported = addImportToAppDelegate(
-    readFileSync(rctAppDelegatePath, 'utf8'),
-  ).contents;
-  const withThemeRecovered = addThemeRecovery(
-    withThemeControlImported,
-    options,
-  ).contents;
-  writeFileSync(rctAppDelegatePath, withThemeRecovered);
-}
-
-function patchPodspecForUseFrameworks(projectRoot: string) {
-  const appDelegatePodspecPath = getAppDelegateFilePath(
-    projectRoot,
-    'React-RCTAppDelegate.podspec',
-  );
-  const podspecContent = readFileSync(appDelegatePodspecPath, 'utf8');
-  const withHeaderSearchPath = addHeaderSearchPath(podspecContent).contents;
-  writeFileSync(appDelegatePodspecPath, withHeaderSearchPath);
-}
-
 function getDevLauncherPath(projectRoot: string): string {
   return getFilePath({
     projectRoot,
@@ -160,14 +182,7 @@ function getDevLauncherPath(projectRoot: string): string {
     fileName: 'EXDevLauncherController.m',
   });
 }
-function getAppDelegateFilePath(projectRoot: string, fileName: string): string {
-  return getFilePath({
-    projectRoot,
-    packageName: 'react-native',
-    subpath: 'Libraries/AppDelegate',
-    fileName,
-  });
-}
+
 function getFilePath({
   projectRoot,
   packageName,
@@ -179,7 +194,9 @@ function getFilePath({
   subpath: string;
   fileName: string;
 }): string {
-  const location = path.dirname(require.resolve(`${packageName}/package.json`));
+  const location = path.dirname(
+    resolveFrom(projectRoot, `${packageName}/package.json`),
+  );
   if (!location) {
     throw new Error(
       `${themeControlName}: Could not locate React Native from root: "${projectRoot}"`,
@@ -222,6 +239,7 @@ const withThemeControl: ThemeConfigPlugin = (config, options = {}) => {
       `${themeControlName}: Invalid mode "${options.mode}". Valid modes are "userPreference", "light" and "dark".`,
     );
   }
+
   config = withIosPlugin(config, options);
   config = withMainActivityThemeRecovery(config, options);
   return config;

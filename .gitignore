@@ -38,7 +38,8 @@ android.iml
 
 # Cocoapods
 #
-example/ios/Pods
+example/ios
+example/android
 
 # node.js
 #
@@ -61,7 +62,6 @@ lib/
 
 
 docgen/
-theme-ex/
 
 # for future https://github.com/yarnpkg/berry/issues/454#issuecomment-530312089
 .yarn/*

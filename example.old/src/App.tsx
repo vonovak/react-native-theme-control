@@ -14,15 +14,17 @@ import {
   useColorScheme,
 } from 'react-native';
 import { useLayoutEffect } from 'react';
-// import DocumentPicker from 'react-native-document-picker';
+import DocumentPicker from 'react-native-document-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MenuView } from '@react-native-menu/menu';
 import { SimpleScreen } from './SimpleScreen';
+import { AppBackground } from '@vonovak/react-native-theme-control';
 
 type RootStackParamList = {
   Home: undefined;
   ScreenTwo: undefined;
   SimpleScreen: undefined;
+  ModalScreen: undefined;
 };
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -44,15 +46,18 @@ const ScreenOne = ({
   }, [navigation, bgColor, textColor]);
 
   return (
-    <Screen
-      barsBackground={isDarkMode ? '#9900F0' : '#A0BCC2'}
-      bgColor={bgColor}
-      textColor={textColor}
-      dividerColor={dividerColor}
-      navigate={() => {
-        navigation.navigate('ScreenTwo');
-      }}
-    />
+    <>
+      <AppBackground dark={'red'} light={'blue'} />
+      <Screen
+        barsBackground={isDarkMode ? '#9900F0' : '#A0BCC2'}
+        bgColor={bgColor}
+        textColor={textColor}
+        dividerColor={dividerColor}
+        navigate={() => {
+          navigation.navigate('ScreenTwo');
+        }}
+      />
+    </>
   );
 };
 
@@ -80,6 +85,8 @@ const ScreenTwo = ({
         backgroundColor: bgColor,
       }}
     >
+      <AppBackground dark={'pink'} light={'yellow'} />
+
       <SafeAreaView edges={['bottom']} style={{ flex: 1 }}>
         <Screen
           barsBackground={isDarkMode ? '#005555' : '#EE5007'}
@@ -115,13 +122,13 @@ const ScreenTwo = ({
         <Button
           title="open picker for single file selection"
           onPress={async () => {
-            // try {
-            //   await DocumentPicker.pickSingle({
-            //     presentationStyle: 'fullScreen',
-            //   });
-            // } catch (e) {
-            //   // ignore
-            // }
+            try {
+              await DocumentPicker.pickSingle({
+                presentationStyle: 'fullScreen',
+              });
+            } catch (e) {
+              // ignore
+            }
           }}
         />
       </SafeAreaView>
@@ -135,6 +142,11 @@ function AppStack() {
       <Stack.Screen name="Home" component={ScreenOne} />
       <Stack.Screen name="ScreenTwo" component={ScreenTwo} />
       <Stack.Screen name="SimpleScreen" component={SimpleScreen} />
+      <Stack.Screen
+        name="ModalScreen"
+        component={SimpleScreen}
+        options={{ presentation: 'modal' }}
+      />
     </Stack.Navigator>
   );
 }

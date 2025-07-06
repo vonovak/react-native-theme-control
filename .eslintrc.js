@@ -25,7 +25,7 @@ module.exports = {
     'scripts/*',
     'app.plugin.js',
     '*.config.js',
+    'example.old/*',
     'example/*',
-    'theme-ex/*',
   ],
 };
