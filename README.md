@@ -1,28 +1,64 @@
 # react-native-theme-control
 
-Control the native platform theme from React Native.
+[![npm version](https://badge.fury.io/js/%40vonovak%2Freact-native-theme-control.svg)](https://badge.fury.io/js/%40vonovak%2Freact-native-theme-control)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-✅ Control theme of RN Views, as well as native UI controls (alerts, native menus, date pickers... on both Android and iOS)
+Control the native platform theme from React Native with full support for both React Native Views and native UI components.
 
-✅ Recover the previously set theme upon app startup, and **apply it before your app starts rendering**
+## Quick Start
 
-✅ Control the color of the UIApplication Window (iOS) and the current Activity (Android) using [`AppBackground`](https://github.com/vonovak-org/react-native-theme-control/blob/main/docs/readme-internal.md#appbackground)
+```bash
+npm install @vonovak/react-native-theme-control
+# or
+yarn add @vonovak/react-native-theme-control
+```
 
-✅ Supports Expo via a config plugin
+**For Expo projects:**
 
-✅ [New Architecture](https://reactnative.dev/docs/the-new-architecture/landing-page) supported
+```json
+{
+  "expo": {
+    "plugins": ["@vonovak/react-native-theme-control"]
+  }
+}
+```
 
-Additionally, provides functionality to control the appearance (background and border color, light / dark buttons) of the Android navbar.
+**Basic usage:**
 
-The package is tested with RN >= 0.66.1 (last tested with RN 74, Expo 51). See [RN version support](docs/install.md).
+```tsx
+import {
+  setThemePreference,
+  useThemePreference,
+} from '@vonovak/react-native-theme-control';
 
-### Example
+// Set theme
+setThemePreference('dark'); // 'light', 'dark', or 'system'
 
-Notice the color of scroll bar and keyboard in the screenshots below.
+// Use in components
+const theme = useThemePreference(); // Returns current theme preference
+```
 
-| light mode                | dark mode               | application background in modal    |
-| ------------------------- | ----------------------- |------------------------------------|
+## Features
+
+✅ **Complete Theme Control** - Control both React Native Views and native UI components (alerts, date pickers, menus)
+
+✅ **Theme Persistence** - Automatically recovers and applies your theme **before app rendering starts rendering**
+
+✅ **Native Integration** - Control iOS UIApplication Window and Android Activity backgrounds using [`AppBackground`](https://github.com/vonovak-org/react-native-theme-control/blob/main/docs/readme-internal.md#appbackground)
+
+✅ **Expo Support** - Works seamlessly with Expo via config plugin
+
+✅ **New Architecture Ready** - Full support for React Native's New Architecture
+
+## Example
+
+The library ensures consistent theming across your entire app - notice how the scroll bars and keyboard adapt to your theme:
+
+| Light Mode                | Dark Mode               | Modal Background                   |
+| ------------------------- | ----------------------- | ---------------------------------- |
 | ![light](./img/light.png) | ![dark](./img/dark.png) | ![app background](./img/modal.png) |
+
+**[View complete example project →](./example)**
 
 ## Motivation
 
@@ -40,17 +76,28 @@ This package provides a solution to change the application theme so that both re
 
 ## Documentation
 
-Installation and usage instructions can be found [here](./docs/install.md).
+- **[📖 Installation Guide](./docs/install.md)** - Complete setup instructions
+- **[🔧 API Reference](./docs/readme-internal.md)** - Detailed API documentation
+- **[💡 Example Project](./example)** - Working implementation
+- **[🎥 Video Tutorial](https://youtu.be/NNYQj_T0Sf8)** - See it in action
 
-The library api is documented in detail [here](./docs/readme-internal.md).
+## Common Issues
 
-More usage examples can be found [in the example project](./example).
+**Android activity restarts on theme change?** → [See solution](./docs/install.md#android-activity-restarts-upon-theme-change)
 
-### Say thanks
+**Scroll bars not changing color?** → [See solution](./docs/install.md#android-scroll-bars-color-is-not-changing)
 
-If you find the package useful, consider giving a star to the repository or [sponsoring](https://github.com/sponsors/vonovak?frequency=one-time&sponsor=vonovak).
+**Need help?** → [Open an issue](https://github.com/vonovak-org/react-native-theme-control/issues)
 
-### Credits
+## Support
+
+If you find this library useful, consider:
+
+- ⭐ **Starring the repository**
+- 💖 **[Sponsoring the project](https://github.com/sponsors/vonovak)**
+- 🐛 **[Reporting issues](https://github.com/vonovak-org/react-native-theme-control/issues)**
+
+## Credits
 
 Some naming inspiration for the Android Navbar components was taken from [react-native-bars](https://github.com/zoontek/react-native-bars).
 
