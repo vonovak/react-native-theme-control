@@ -1,15 +1,17 @@
-*.binlog
-*.hprof
-*.xcworkspace/
-*.zip
-.DS_Store
-.gradle/
-.idea/
-.vs/
-.xcode.env
-Pods/
-build/
-dist/
-local.properties
-msbuild.binlog
 node_modules/
+.expo/
+dist/
+npm-debug.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
+
+# macOS
+.DS_Store
+
+# Temporary files created by Metro to check the health of the file watcher
+.metro-health-check*
