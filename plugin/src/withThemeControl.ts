@@ -27,6 +27,10 @@ const withMainActivityThemeRecovery: ThemeConfigPlugin = (config, options) => {
       config.modResults.language === 'java',
     );
 
+    const ctxSource =
+      config.modResults.language === 'java'
+        ? 'getApplicationContext()'
+        : 'applicationContext';
     const themeRecoveryCode = (() => {
       if (options.mode === 'light') {
         return 'ThemeControlModule.Companion.forceTheme(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO);';
@@ -34,7 +38,7 @@ const withMainActivityThemeRecovery: ThemeConfigPlugin = (config, options) => {
       if (options.mode === 'dark') {
         return 'ThemeControlModule.Companion.forceTheme(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES);';
       }
-      return 'ThemeControlModule.Companion.recoverApplicationTheme(getApplicationContext());';
+      return `ThemeControlModule.Companion.recoverApplicationTheme(${ctxSource});`;
     })();
 
     config.modResults.contents = mergeContents({
