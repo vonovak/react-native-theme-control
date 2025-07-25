@@ -1,0 +1,34 @@
+name: build
+
+on:
+  push:
+    branches: ['*']
+
+jobs:
+  build-expo-app:
+    steps:
+      - uses: eas/checkout # This also changes cwd
+      - uses: eas/install_node_modules
+
+      - name: build the config plugin so it can be used in the example app
+        run: |
+          cd ..
+          npm run build:plugin
+
+      - name: set the Expo version for the example project and install recommend dep versions
+        run: npx expo install expo@^53 --fix
+
+      - name: Run expo prebuild
+        run: EXPO_DEBUG=1 npx expo prebuild
+
+      - name: Bundle JS code to verify it bundles
+        run: npx expo export
+
+    build_app_android:
+      type: build
+      params:
+        platform: android
+    build_app_ios:
+      type: build
+      params:
+        platform: ios
