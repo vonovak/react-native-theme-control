@@ -22,6 +22,9 @@
     "clean:plugin": "expo-module clean plugin",
     "docs": "typedoc --plugin typedoc-plugin-markdown"
   },
+  "workspaces": [
+    "example"
+  ],
   "keywords": [
     "react-native",
     "ios",
