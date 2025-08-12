@@ -15,6 +15,7 @@ jobs:
           pwd
           yarn create expo-app theme-expo-example --no-install --yes --template expo-template-default@sdk-53
           touch theme-expo-example/yarn.lock # make yarn treat theme-expo-example as a completely separate project
+
       - name: Insert our test screen into the app
         run: |
           cd ..
@@ -37,24 +38,27 @@ jobs:
           yarn add @vonovak/react-native-theme-control
           yarn remove expo-system-ui
 
+      - name: Create default metro config to avoid bundling issues (may not be needed for all projects)
+        run: |
+          cd ../theme-expo-example
+          npx expo customize metro.config.js
+
       - name: Run expo prebuild
         run: |
           cd ../theme-expo-example
           EXPO_DEBUG=1 npx expo prebuild
 
-# fails: https://expo.dev/accounts/expo-ci/projects/theme-expo-example/workflows/0198513c-5cfe-7cf9-aaf4-f793c646cc58
-# also fails locally but with a different error
-#      - name: Bundle JS code to verify it builds
-#        run: |
-#          cd ../theme-expo-example
-#          pwd
-#          npx expo export
+      - name: Bundle JS code to verify it builds
+        run: |
+          cd ../theme-expo-example
+          pwd
+          npx expo export
 
-  build_android:
-    needs: [create-expo-app]
+# this is wrong
+  build_app_android:
     defaults:
       run:
-        working_directory: ./theme-expo-example
-    steps:
-      - name: Build Android
-        run: eas build --platform android --profile production
+        working_directory: ../theme-expo-example
+    type: build
+    params:
+      platform: android
