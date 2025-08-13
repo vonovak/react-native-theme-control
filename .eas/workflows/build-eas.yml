@@ -32,6 +32,11 @@ jobs:
           jq -s '.[0] * .[1]' app.json ../example/test-app.json > app.json.tmp && mv app.json.tmp app.json
           cat app.json
 
+      - name: Put eas.json into the test app to allow building with EAS
+        run: |
+          cp test-eas.json ../theme-expo-example/eas.json
+          cat ../theme-expo-example/eas.json
+
       - name: Install app dependencies and the tested package
         run: |
           cd ../theme-expo-example
@@ -54,8 +59,9 @@ jobs:
           pwd
           npx expo export
 
-# this is wrong
+  # this is wrong
   build_app_android:
+    needs: [create-expo-app]
     defaults:
       run:
         working_directory: ../theme-expo-example
