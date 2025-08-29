@@ -27,7 +27,8 @@ jobs:
       - name: Bundle JS code to verify it bundles
         run: npx expo export
 
-      # perform native build steps
+      # perform native build steps.
+      # Alternatively, use `eas/build` which will work too but performs checkout and install again (they basically noop)
       - uses: eas/resolve_build_config
       - uses: eas/run_gradle
       - uses: eas/find_and_upload_build_artifacts
@@ -59,6 +60,7 @@ jobs:
         run: cat eas.json
 
       # perform native build steps
+      # Alternatively, use `eas/build` which will work too but performs checkout and install again (they basically noop)
       - uses: eas/resolve_build_config
       - uses: eas/generate_gymfile_from_template
       - uses: eas/run_fastlane
