@@ -12,7 +12,6 @@
       "withoutCredentials": true,
       "distribution": "internal",
       "ios": {
-        "//": "to produce an ipa",
         "simulator": true
       }
     },
