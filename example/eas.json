@@ -9,6 +9,7 @@
       "distribution": "internal"
     },
     "preview": {
+      "withoutCredentials": true,
       "distribution": "internal"
     },
     "production": {

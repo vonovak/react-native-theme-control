@@ -16,16 +16,22 @@ jobs:
           npm run build:plugin
 
       - name: set the Expo version for the example project and install recommend dep versions
-        run: npx expo install expo@^53 --fix
+        run: npx expo install expo@^54 --fix
 
       - name: Run expo prebuild
-        run: EXPO_DEBUG=1 npx expo prebuild
+        run: EXPO_DEBUG=1 npx expo prebuild -p android
 
       - name: Bundle JS code to verify it bundles
         run: npx expo export
+
+      # perform native build steps
+      - uses: eas/resolve_build_config
+      - uses: eas/run_gradle
+      - uses: eas/find_and_upload_build_artifacts
     type: build
     params:
       platform: android
+      profile: preview
 
   build_app_ios:
     steps:
@@ -38,13 +44,20 @@ jobs:
           npm run build:plugin
 
       - name: set the Expo version for the example project and install recommend dep versions
-        run: npx expo install expo@^53 --fix
+        run: npx expo install expo@^54 --fix
 
       - name: Run expo prebuild
-        run: EXPO_DEBUG=1 npx expo prebuild
+        run: EXPO_DEBUG=1 npx expo prebuild -p ios
 
       - name: Bundle JS code to verify it bundles
         run: npx expo export
+
+      # perform native build steps
+      - uses: eas/resolve_build_config
+      - uses: eas/generate_gymfile_from_template
+      - uses: eas/run_fastlane
+      - uses: eas/find_and_upload_build_artifacts
     type: build
     params:
       platform: ios
+      profile: preview
