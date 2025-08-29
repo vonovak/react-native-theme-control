@@ -10,7 +10,11 @@
     },
     "preview": {
       "withoutCredentials": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "ios": {
+        "//": "to produce an ipa",
+        "simulator": true
+      }
     },
     "production": {
       "autoIncrement": true
