@@ -1,0 +1,70 @@
+name: build
+
+on:
+  push:
+    branches: ['*']
+
+jobs:
+  create-expo-app:
+    steps:
+      - uses: eas/checkout # to access the test-screen.tsx file later. This also changes cwd
+      - name: create a fresh app
+        run: |
+          cd ..
+          echo 'pwd:'
+          pwd
+          yarn create expo-app theme-expo-example --no-install --yes --template expo-template-default@sdk-53
+          touch theme-expo-example/yarn.lock # make yarn treat theme-expo-example as a completely separate project
+
+      - name: Insert our test screen into the app
+        run: |
+          cd ..
+          echo 'pwd:'
+          pwd
+          cp example/src/test-screen.tsx "theme-expo-example/app/(tabs)/index.tsx"
+          cat "theme-expo-example/app/(tabs)/index.tsx"
+
+      - name: Merge app.json with the tested package's app.json
+        run: |
+          pwd
+          cd ../theme-expo-example
+          jq '.expo.plugins += ["@vonovak/react-native-theme-control"]' app.json > app.json.tmp && mv app.json.tmp app.json
+          jq -s '.[0] * .[1]' app.json ../example/test-app.json > app.json.tmp && mv app.json.tmp app.json
+          cat app.json
+
+      - name: Put eas.json into the test app to allow building with EAS
+        run: |
+          cp test-eas.json ../theme-expo-example/eas.json
+          cat ../theme-expo-example/eas.json
+
+      - name: Install app dependencies and the tested package
+        run: |
+          cd ../theme-expo-example
+          yarn add @vonovak/react-native-theme-control
+          yarn remove expo-system-ui
+
+      - name: Create default metro config to avoid bundling issues (may not be needed for all projects)
+        run: |
+          cd ../theme-expo-example
+          npx expo customize metro.config.js
+
+      - name: Run expo prebuild
+        run: |
+          cd ../theme-expo-example
+          EXPO_DEBUG=1 npx expo prebuild
+
+      - name: Bundle JS code to verify it builds
+        run: |
+          cd ../theme-expo-example
+          pwd
+          npx expo export
+
+  # this is wrong
+  build_app_android:
+    needs: [create-expo-app]
+    defaults:
+      run:
+        working_directory: ../theme-expo-example
+    type: build
+    params:
+      platform: android
