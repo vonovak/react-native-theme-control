@@ -3418,6 +3418,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-menu/menu@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@react-native-menu/menu@npm:2.0.0"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/1e88e1892730c70e28a654a8df6427f80f1b88880eaa62f2744072b9cebead4e834490d15ef7f0b91eadf9cb1ec9241b29f116ce7e94661685b41faf10af3fa3
+  languageName: node
+  linkType: hard
+
 "@react-native-segmented-control/segmented-control@npm:2.5.7, @react-native-segmented-control/segmented-control@npm:^2.5.7":
   version: 2.5.7
   resolution: "@react-native-segmented-control/segmented-control@npm:2.5.7"
@@ -15521,7 +15531,7 @@ __metadata:
   dependencies:
     "@babel/core": "npm:^7.26.0"
     "@react-native-community/datetimepicker": "npm:8.4.1"
-    "@react-native-menu/menu": "npm:^1.2.3"
+    "@react-native-menu/menu": "npm:^2.0.0"
     "@react-native-segmented-control/segmented-control": "npm:2.5.7"
     "@react-navigation/native": "npm:^6.1.17"
     "@react-navigation/native-stack": "npm:^6.9.26"

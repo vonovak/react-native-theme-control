@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@react-native-community/datetimepicker": "8.4.1",
-    "@react-native-menu/menu": "^1.2.3",
+    "@react-native-menu/menu": "^2.0.0",
     "@react-native-segmented-control/segmented-control": "2.5.7",
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/native-stack": "^6.9.26",
