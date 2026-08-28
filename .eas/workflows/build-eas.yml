@@ -1,0 +1,71 @@
+name: build
+
+on:
+  push:
+    branches: ['*']
+
+jobs:
+  build_app_android:
+    steps:
+      - uses: eas/checkout # This also changes cwd
+      - uses: eas/install_node_modules
+
+      - name: Build the config plugin so it can be used in the example app
+        run: |
+          cd ..
+          npm run build:plugin
+
+      - name: Set the Expo version for the example project and install recommend dep versions
+        run: npx expo install expo@^53 --fix # one dep is 54-incompatible
+
+      - name: Run expo prebuild
+        run: EXPO_DEBUG=1 npx expo prebuild -p android
+
+      - name: Print eas.json
+        run: cat eas.json
+
+      - name: Bundle JS code to verify it bundles
+        run: npx expo export
+
+      # perform native build steps.
+      # Alternatively, use `eas/build` which will work too but performs checkout and install again (they basically noop)
+      - uses: eas/resolve_build_config
+      - uses: eas/run_gradle
+      - uses: eas/find_and_upload_build_artifacts
+    type: build
+    params:
+      platform: android
+      profile: preview
+
+  build_app_ios:
+    steps:
+      - uses: eas/checkout # This also changes cwd
+      - uses: eas/install_node_modules
+
+      - name: Build the config plugin so it can be used in the example app
+        run: |
+          cd ..
+          npm run build:plugin
+
+      - name: Set the Expo version for the example project and install recommend dep versions
+        run: npx expo install expo@next --fix
+
+      - name: Run expo prebuild
+        run: EXPO_DEBUG=1 npx expo prebuild -p ios
+
+      - name: Bundle JS code to verify it bundles
+        run: npx expo export
+
+      - name: Print eas.json
+        run: cat eas.json
+
+      # perform native build steps
+      # Alternatively, use `eas/build` which will work too but performs checkout and install again (they basically noop)
+      - uses: eas/resolve_build_config
+      - uses: eas/generate_gymfile_from_template
+      - uses: eas/run_fastlane
+      - uses: eas/find_and_upload_build_artifacts
+    type: build
+    params:
+      platform: ios
+      profile: preview

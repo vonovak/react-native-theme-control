@@ -17,6 +17,12 @@
     },
     "android": {
       "package": "com.vonovak.themeexpoexample"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "348a68a7-b896-4172-ae18-64e4afc32413"
+      }
+    },
+    "owner": "expo-ci"
   }
 }
