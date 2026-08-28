@@ -7,11 +7,14 @@
 #   2. example-app Take the example app in this repo and bump it to the target
 #                  SDK, the way an existing user upgrades.
 #
-# Both then run `expo prebuild` and `expo export`, and build the native app.
-# Each runs on ubuntu and on macOS, because iOS needs Xcode. The two strategies
-# catch different faults, so keep both. See the banner above each job.
+# Both then run `expo prebuild` and `expo export`. Pull requests stop there; the
+# monthly schedule goes on to build the native app. Each runs on ubuntu and on
+# macOS, because only macOS can run `pod install` and build iOS. The two
+# strategies catch different faults, so keep both. See the banner above each job.
 #
-# Uses expo/actions
+# TODO: the two expo/actions below point at a fork branch while
+# https://github.com/expo/actions/pull/12 is in review. Switch all three `uses:`
+# to `expo/actions/...@main` before merging this workflow.
 
 name: expo compatibility
 
@@ -23,14 +26,14 @@ on:
         description: 'Comma-separated SDK specifiers (latest, latest-1, next, canary, 53)'
         default: latest,latest-1
       build:
-        description: 'Comma-separated build steps. Leave empty to build the native app for the runner (ios on macOS, android on ubuntu).'
+        description: 'Comma-separated build steps (prebuild, export, ios, android). Leave empty for `auto`, which builds ios on macOS and android on ubuntu.'
         required: false
   schedule:
     # Monthly, on the 1st at 04:00 UTC.
     - cron: '0 4 1 * *'
 
 concurrency:
-  group: expo-compat-${{ github.ref }}
+  group: expo-compat-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
@@ -49,9 +52,9 @@ jobs:
     outputs:
       versions: ${{ steps.resolve.outputs.versions }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: lts/*
 
@@ -75,7 +78,7 @@ jobs:
           mv "$RUNNER_TEMP"/pack/*.tgz "$RUNNER_TEMP/$TARBALL_NAME"
           tar tzf "$RUNNER_TEMP/$TARBALL_NAME" | grep 'plugin/build/withThemeControl.js'
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: library-tarball
           path: ${{ runner.temp }}/${{ env.TARBALL_NAME }}
@@ -103,23 +106,23 @@ jobs:
     name: expo ${{ matrix.expo-version }} (fresh app, ${{ matrix.os }})
     steps:
       - name: Checkout library
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: library
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: lts/*
 
       - name: Setup Java
         if: matrix.os != 'macos-latest'
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
 
       - name: Download packed library
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: library-tarball
           path: library-dist
@@ -129,13 +132,15 @@ jobs:
         with:
           expo-version: ${{ matrix.expo-version }}
           app-path: expo-test-app
-          local-package: library-dist/theme-control.tgz
+          local-package: library-dist/${{ env.TARBALL_NAME }}
           # Reuse the example app's dependency-free screen. It default-exports the component,
           # so a one-line entry point is all the blank app needs.
           copy-files: library/example/src/SimpleScreen.tsx
           setup-hook: echo "export { default } from './SimpleScreen';" > App.tsx
           config-plugins: '["@vonovak/react-native-theme-control"]'
-          build: ${{ inputs.build || (matrix.os == 'macos-latest' && 'prebuild,export,ios' || 'prebuild,export,android') }}
+          # `auto` builds ios on macOS and android on ubuntu. Pull requests stop at
+          # the JS bundle; the monthly schedule pays for the native builds.
+          build: ${{ inputs.build || (github.event_name == 'pull_request' && 'prebuild,export' || 'auto') }}
 
   # ---------------------------------------------------------------------------
   # Strategy 2: the example app in this repo.
@@ -160,15 +165,15 @@ jobs:
       # the lockfile. Yarn refuses that by default when CI is set.
       YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: lts/*
 
       - name: Setup Java
         if: matrix.os != 'macos-latest'
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
@@ -186,4 +191,6 @@ jobs:
         with:
           expo-version: ${{ matrix.expo-version }}
           app-path: example
-          build: ${{ inputs.build || (matrix.os == 'macos-latest' && 'prebuild,export,ios' || 'prebuild,export,android') }}
+          # `auto` builds ios on macOS and android on ubuntu. Pull requests stop at
+          # the JS bundle; the monthly schedule pays for the native builds.
+          build: ${{ inputs.build || (github.event_name == 'pull_request' && 'prebuild,export' || 'auto') }}
