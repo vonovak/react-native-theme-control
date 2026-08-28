@@ -17,6 +17,13 @@
     },
     "android": {
       "package": "com.vonovak.themeexpoexample"
-    }
+    },
+    "//comment": "this is here so eas workflow:run can be executed locally",
+    "extra": {
+      "eas": {
+        "projectId": "348a68a7-b896-4172-ae18-64e4afc32413"
+      }
+    },
+    "owner": "expo-ci"
   }
 }
