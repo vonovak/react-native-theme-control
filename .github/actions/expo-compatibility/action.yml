@@ -1,0 +1,154 @@
+name: 'Expo Compatibility Test'
+description: 'Setup Expo app, run prebuild, export, and optionally build native apps'
+
+inputs:
+  expo_version:
+    description: 'Expo SDK version (52, 53, 54, latest, next)'
+    required: true
+
+  app_path:
+    description: 'Path where app exists or will be created'
+    default: 'expo-test-app'
+
+  project_name:
+    description: 'Project name for create-expo-app (determines iOS scheme name)'
+    default: 'expotestapp'
+
+  app_template:
+    description: 'Template for new apps'
+    default: 'expo-template-blank-typescript'
+
+  setup_hook:
+    description: 'Script to run after app is created/updated (install package, modify App.tsx, app.json, etc)'
+    required: false
+
+  skip_prebuild:
+    description: 'Skip expo prebuild step'
+    default: 'false'
+
+  skip_export:
+    description: 'Skip expo export step'
+    default: 'false'
+
+  skip_ios_build:
+    description: 'Skip iOS build (only runs on macOS)'
+    default: 'false'
+
+  skip_android_build:
+    description: 'Skip Android build'
+    default: 'false'
+
+  ios_scheme:
+    description: 'iOS scheme name (auto-detected from project_name if not provided)'
+    required: false
+
+  android_gradle_task:
+    description: 'Gradle task for Android build'
+    default: 'assembleRelease'
+
+  upload_artifact:
+    description: 'Upload the generated app as an artifact'
+    default: 'false'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Expo app
+      run: |
+        echo "::group::Setup Expo app"
+        if [ -d "${{ inputs.app_path }}" ]; then
+          echo "✓ Using existing app at ${{ inputs.app_path }}"
+          cd "${{ inputs.app_path }}"
+          npx expo install expo@${{ inputs.expo_version }} --fix
+        else
+          echo "✓ Creating new Expo app: ${{ inputs.project_name }}"
+          npx create-expo-app "${{ inputs.project_name }}" --no-install --yes --template ${{ inputs.app_template }}@sdk-${{ inputs.expo_version }}
+
+          # Move to desired path if different from project name
+          if [ "${{ inputs.project_name }}" != "${{ inputs.app_path }}" ]; then
+            mv "${{ inputs.project_name }}" "${{ inputs.app_path }}"
+          fi
+
+          # Customize metro.config.js to isolate from hosting repo
+          cd "${{ inputs.app_path }}"
+          npx expo customize metro.config.js
+        fi
+        echo "::endgroup::"
+      shell: bash
+
+    - name: Run setup hook
+      if: inputs.setup_hook != ''
+      run: |
+        echo "::group::Run setup hook"
+        echo "✓ Running setup hook"
+        ${{ inputs.setup_hook }}
+        echo "::endgroup::"
+      shell: bash
+      working-directory: ${{ inputs.app_path }}
+
+    - name: Upload Expo app artifact
+      if: always() && inputs.upload_artifact == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ format('expo-app-{0}-{1}', runner.os, inputs.app_path) }}
+        path: |
+          ${{ inputs.app_path }}
+          !${{ inputs.app_path }}/node_modules
+        retention-days: 7
+
+    - name: Run expo prebuild
+      if: inputs.skip_prebuild == 'false'
+      run: |
+        echo "::group::Run expo prebuild"
+        echo "✓ Running expo prebuild"
+        npx expo prebuild
+        echo "::endgroup::"
+      shell: bash
+      working-directory: ${{ inputs.app_path }}
+      env:
+        RCT_USE_PREBUILT_RNCORE: 1
+        RCT_USE_RN_DEP: 1
+        EXPO_DEBUG: 0
+
+    - name: Bundle JS code
+      if: inputs.skip_export == 'false'
+      run: |
+        echo "::group::Bundle JS code"
+        echo "✓ Bundling JS with expo export"
+        npx expo export
+        echo "::endgroup::"
+      shell: bash
+      working-directory: ${{ inputs.app_path }}
+
+    - name: Build iOS
+      if: inputs.skip_ios_build == 'false' && runner.os == 'macOS'
+      run: |
+        echo "::group::Build iOS"
+        # Auto-detect scheme from project name if not provided
+        SCHEME="${{ inputs.ios_scheme }}"
+        if [ -z "$SCHEME" ]; then
+          # Convert project name to lowercase and remove hyphens/underscores
+          SCHEME=$(echo "${{ inputs.project_name }}" | tr '[:upper:]' '[:lower:]' | tr -d '-' | tr -d '_')
+        fi
+
+        echo "✓ Building iOS app (scheme: $SCHEME)"
+        xcodebuild \
+          -workspace ios/${SCHEME}.xcworkspace \
+          -scheme ${SCHEME} \
+          -configuration Release \
+          -sdk iphonesimulator \
+          -derivedDataPath ios/build
+        echo "::endgroup::"
+      shell: bash
+      working-directory: ${{ inputs.app_path }}
+
+    - name: Build Android
+      if: inputs.skip_android_build == 'false' && runner.os != 'macOS'
+      run: |
+        echo "::group::Build Android"
+        echo "✓ Building Android app (task: ${{ inputs.android_gradle_task }})"
+        cd android
+        ./gradlew ${{ inputs.android_gradle_task }}
+        echo "::endgroup::"
+      shell: bash
+      working-directory: ${{ inputs.app_path }}

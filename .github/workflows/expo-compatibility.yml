@@ -1,0 +1,71 @@
+name: Expo Compatibility Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-expo-compatibility:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        expo-version: ['54']
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: 'yarn'
+
+      - name: Setup Java
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build library
+        run: npm pack
+
+      - name: Test Expo SDK ${{ matrix.expo-version }} on ${{ matrix.os }} with existing example app
+        uses: ./.github/actions/expo-compatibility
+        with:
+          expo_version: ${{ matrix.expo-version }}
+          app_path: 'example'
+          project_name: 'themeexpoexample'
+          skip_export: 'false'
+
+      - name: Test Expo SDK ${{ matrix.expo-version }} on ${{ matrix.os }} with a fresh app
+        uses: ./.github/actions/expo-compatibility
+        with:
+          expo_version: ${{ matrix.expo-version }}
+          app_path: 'expo-test-app-${{ matrix.expo-version }}'
+          project_name: 'expotestapp'
+          setup_hook: |
+            npm install
+            npm install ../vonovak-react-native-theme-control-*.tgz
+
+            # Add config plugin to app.json
+            node -e "
+              const fs = require('fs');
+              const appJson = JSON.parse(fs.readFileSync('app.json'));
+              appJson.expo.plugins = appJson.expo.plugins || [];
+              appJson.expo.plugins.push('@vonovak/react-native-theme-control');
+              fs.writeFileSync('app.json', JSON.stringify(appJson, null, 2));
+            "
+
+            # Test that the library can be imported
+            echo "import { setThemePreference } from '@vonovak/react-native-theme-control';" >> App.tsx
+          skip_prebuild: 'false'
+          skip_export: 'false'
