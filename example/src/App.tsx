@@ -18,6 +18,9 @@ import { useLayoutEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MenuView } from '@react-native-menu/menu';
 import { SimpleScreen } from './SimpleScreen';
+import { ThemePreference } from '@vonovak/react-native-theme-control';
+// @ts-ignore
+import SegmentedControl from '@react-native-segmented-control/segmented-control/js/SegmentedControl.js';
 
 type RootStackParamList = {
   Home: undefined;
@@ -134,7 +137,22 @@ function AppStack() {
     <Stack.Navigator>
       <Stack.Screen name="Home" component={ScreenOne} />
       <Stack.Screen name="ScreenTwo" component={ScreenTwo} />
-      <Stack.Screen name="SimpleScreen" component={SimpleScreen} />
+      <Stack.Screen name="SimpleScreen">
+        {() => (
+          <SimpleScreen
+            renderThemePicker={({ values, selected, onSelect }) => (
+              <SegmentedControl
+                style={{ width: '100%' }}
+                values={values}
+                selectedIndex={values.indexOf(selected)}
+                onChange={({ nativeEvent }: { nativeEvent: any }) => {
+                  onSelect(nativeEvent.value as ThemePreference);
+                }}
+              />
+            )}
+          />
+        )}
+      </Stack.Screen>
     </Stack.Navigator>
   );
 }
