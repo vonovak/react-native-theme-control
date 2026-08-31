@@ -2,8 +2,9 @@
 #
 # Every SDK version in the matrix is tested two ways:
 #
-#   1. fresh-app   Create a blank app and install the library from a packed
-#                  tarball, the way a new user gets it.
+#   1. fresh-app   The reusable expo-compat workflow packs the library, creates
+#                  a blank app per SDK version and runner, and installs the
+#                  packed tarball, the way a new user gets it.
 #   2. example-app Take the example app in this repo and bump it to the target
 #                  SDK, the way an existing user upgrades.
 #
@@ -12,7 +13,7 @@
 # macOS, because only macOS can run `pod install` and build iOS. The two
 # strategies catch different faults, so keep both. See the banner above each job.
 #
-# TODO: the two expo/actions below point at a fork branch while
+# TODO: the expo/actions references below point at a fork branch while
 # https://github.com/expo/actions/pull/12 is in review. Switch all three `uses:`
 # to `expo/actions/...@main` before merging this workflow.
 
@@ -36,128 +37,64 @@ concurrency:
   group: expo-compat-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  TARBALL_NAME: theme-control.tgz
-
 jobs:
   # ---------------------------------------------------------------------------
-  # Shared setup. Resolves the SDK matrix, and packs the library once for
-  # fresh-app. example-app does not use the tarball.
+  # Strategy 1: a blank app, via the reusable workflow.
   #
-  # The matrix is one SDK by default. Every extra version doubles four jobs, two
+  # It detects yarn from the lockfile, runs `yarn install --immutable`, builds
+  # with `yarn prepare`, packs with `npm pack --ignore-scripts`, and fans out
+  # over the SDK versions and both runners. The library is installed from the
+  # tarball, so this tests what npm publishes. Nothing else is installed, so a
+  # red job likely points at the library itself and not at a third-party
+  # dependency.
+  #
+  # The matrix is one SDK by default. Every extra version doubles the jobs, half
   # of them macOS. Pass `expo-versions` to workflow_dispatch to widen it.
   # ---------------------------------------------------------------------------
-  prepare:
+  fresh-app:
+    uses: vonovak/actions/.github/workflows/expo-compat.yml@build-expo-app
+    with:
+      expo-versions: ${{ inputs.expo-versions || 'latest' }}
+      build-command: yarn prepare
+      # Reuse the example app's dependency-free screen. It default-exports the
+      # component, so a one-line entry point is all the blank app needs.
+      copy-files: example/src/SimpleScreen.tsx
+      setup-hook: echo "export { default } from './SimpleScreen';" > App.tsx
+      config-plugins: '["@vonovak/react-native-theme-control"]'
+      # Empty picks the workflow default: `prebuild,export` on pull requests,
+      # `auto` on every other trigger. `auto` builds ios on macOS and android
+      # everywhere else.
+      build: ${{ inputs.build || '' }}
+
+  # ---------------------------------------------------------------------------
+  # Strategy 2: the example app in this repo.
+  #
+  # The reusable workflow only builds blank apps, so this job stays hand-written.
+  # `build-expo-app` bumps the app to the target SDK with `expo install --fix`,
+  # because `app-path` already exists. This exercises the full example screens
+  # and full dependency tree.
+  #
+  # Only the version resolution is shared. The action runs without a checkout,
+  # so the resolve job is a single step.
+  # ---------------------------------------------------------------------------
+  resolve:
     runs-on: ubuntu-latest
     outputs:
       versions: ${{ steps.resolve.outputs.versions }}
     steps:
-      - uses: actions/checkout@v6
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: lts/*
-
       - name: Resolve Expo SDK versions
         id: resolve
         uses: vonovak/actions/resolve-expo-versions@build-expo-app
         with:
           expo-version: ${{ inputs.expo-versions || 'latest' }}
 
-      - name: Build and pack the library
-        run: |
-          corepack enable
-          yarn install --immutable
-          yarn prepare
-
-          # Pack with npm, not yarn. `yarn pack` also applies .gitignore, which
-          # holds `build/` and silently drops plugin/build from the tarball.
-          # `prepare` already ran above, so skip npm's lifecycle scripts.
-          mkdir -p "$RUNNER_TEMP/pack" # npm pack does not create the destination
-          npm pack --ignore-scripts --pack-destination "$RUNNER_TEMP/pack"
-          mv "$RUNNER_TEMP"/pack/*.tgz "$RUNNER_TEMP/$TARBALL_NAME"
-          tar tzf "$RUNNER_TEMP/$TARBALL_NAME" | grep 'plugin/build/withThemeControl.js'
-
-      - uses: actions/upload-artifact@v5
-        with:
-          name: library-tarball
-          path: ${{ runner.temp }}/${{ env.TARBALL_NAME }}
-          retention-days: 1
-
-  # ---------------------------------------------------------------------------
-  # Strategy 1: a blank app.
-  #
-  # `build-expo-app` creates the app, because `app-path` does not exist yet.
-  # The library is installed from the tarball, so this tests what npm publishes.
-  # Nothing else is installed, so a red job likely points at the library itself and not
-  # at a third-party dependency.
-  #
-  # Runs on both runners. iOS needs Xcode, so the action refuses to build it
-  # anywhere but macOS. Each runner builds the platform it can.
-  # ---------------------------------------------------------------------------
-  fresh-app:
-    needs: prepare
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        expo-version: ${{ fromJSON(needs.prepare.outputs.versions) }}
-        os: [ubuntu-latest, macos-latest]
-    name: expo ${{ matrix.expo-version }} (fresh app, ${{ matrix.os }})
-    steps:
-      - name: Checkout library
-        uses: actions/checkout@v6
-        with:
-          path: library
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: lts/*
-
-      - name: Setup Java
-        if: matrix.os != 'macos-latest'
-        uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: '17'
-
-      - name: Download packed library
-        uses: actions/download-artifact@v5
-        with:
-          name: library-tarball
-          path: library-dist
-
-      - name: Build Expo app
-        uses: vonovak/actions/build-expo-app@build-expo-app
-        with:
-          expo-version: ${{ matrix.expo-version }}
-          app-path: expo-test-app
-          local-package: library-dist/${{ env.TARBALL_NAME }}
-          # Reuse the example app's dependency-free screen. It default-exports the component,
-          # so a one-line entry point is all the blank app needs.
-          copy-files: library/example/src/SimpleScreen.tsx
-          setup-hook: echo "export { default } from './SimpleScreen';" > App.tsx
-          config-plugins: '["@vonovak/react-native-theme-control"]'
-          # `auto` builds ios on macOS and android on ubuntu. Pull requests stop at
-          # the JS bundle; the monthly schedule pays for the native builds.
-          build: ${{ inputs.build || (github.event_name == 'pull_request' && 'prebuild,export' || 'auto') }}
-
-  # ---------------------------------------------------------------------------
-  # Strategy 2: the example app in this repo.
-  #
-  # `build-expo-app` bumps the app to the target SDK with `expo install --fix`,
-  # because `app-path` already exists. This exercises the full example screens and
-  # full dependency tree.
-  #
-  # Runs on both runners, same split as strategy 1.
-  # ---------------------------------------------------------------------------
   example-app:
-    needs: prepare
+    needs: resolve
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        expo-version: ${{ fromJSON(needs.prepare.outputs.versions) }}
+        expo-version: ${{ fromJSON(needs.resolve.outputs.versions) }}
         os: [ubuntu-latest, macos-latest]
     name: expo ${{ matrix.expo-version }} (example app, ${{ matrix.os }})
     env:
