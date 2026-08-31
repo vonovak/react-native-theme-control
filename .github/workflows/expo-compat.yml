@@ -77,7 +77,7 @@ jobs:
   # Only the version resolution is shared. The action runs without a checkout,
   # so the resolve job is a single step.
   # ---------------------------------------------------------------------------
-  resolve:
+  resolve-sdk-versions:
     runs-on: ubuntu-latest
     outputs:
       versions: ${{ steps.resolve.outputs.versions }}
@@ -89,12 +89,12 @@ jobs:
           expo-version: ${{ inputs.expo-versions || 'latest' }}
 
   example-app:
-    needs: resolve
+    needs: resolve-sdk-versions
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        expo-version: ${{ fromJSON(needs.resolve.outputs.versions) }}
+        expo-version: ${{ fromJSON(needs.resolve-sdk-versions.outputs.versions) }}
         os: [ubuntu-latest, macos-latest]
     name: expo ${{ matrix.expo-version }} (example app, ${{ matrix.os }})
     env:
