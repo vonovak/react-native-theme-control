@@ -70,18 +70,44 @@ const insertThemeRecovery: ThemeConfigPlugin = (config, options) => {
       return 'RNThemeControl.recoverApplicationTheme()';
     })();
 
-    config.modResults.contents = mergeContents({
-      src: config.modResults.contents,
-      tag: themeControlName + themeRecoveryTag,
-      newSrc: `    ${themeRecoveryCode}`,
-      anchor: /window = UIWindow\(frame: UIScreen\.main\.bounds\)/,
-      offset: 1,
-      comment: '//',
-    }).contents;
+    config.modResults.contents = addThemeRecoveryToAppDelegate(
+      config.modResults.contents,
+      themeRecoveryCode,
+    );
 
     return config;
   });
 };
+
+const windowCreationAnchor =
+  /window = UIWindow\(frame: UIScreen\.main\.bounds\)/;
+// with the scene-based life cycle (Expo SDK 58+), the window is created by SceneDelegate
+const didFinishLaunchingReturnAnchor =
+  /return super\.application\(application, didFinishLaunchingWithOptions: launchOptions\)/;
+
+export function addThemeRecoveryToAppDelegate(
+  src: string,
+  themeRecoveryCode: string,
+): string {
+  const [anchor, offset] = windowCreationAnchor.test(src)
+    ? [windowCreationAnchor, 1]
+    : [didFinishLaunchingReturnAnchor, 0];
+
+  if (!anchor.test(src)) {
+    throw new Error(
+      `${themeControlName}: Could not find where to insert theme recovery in AppDelegate. Please open an issue.`,
+    );
+  }
+
+  return mergeContents({
+    src,
+    tag: themeControlName + themeRecoveryTag,
+    newSrc: `    ${themeRecoveryCode}`,
+    anchor,
+    offset,
+    comment: '//',
+  }).contents;
+}
 
 function patchBridgingHeader(projectRoot: string) {
   const iosPath = path.join(projectRoot, 'ios');

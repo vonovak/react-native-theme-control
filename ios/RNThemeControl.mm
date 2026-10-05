@@ -79,6 +79,7 @@ RCT_EXPORT_METHOD(setAppBackground:(NSDictionary*) options
 
 + (void) forceTheme: (UIUserInterfaceStyle) forcedStyle {
   cachedStyle = forcedStyle;
+  [RNThemeControl applyThemeToWindowsShownLater];
 
   NSArray<UIWindow *> *windows = UIApplication.sharedApplication.windows;
   for (UIWindow *window in windows) {
@@ -87,6 +88,22 @@ RCT_EXPORT_METHOD(setAppBackground:(NSDictionary*) options
   NSString* appearanceOverride = [RNThemeControl getRCTAppearanceOverride:forcedStyle];
   // TODO investigate more into why this call is needed
   RCTOverrideAppearancePreference(appearanceOverride);
+}
+
+// with the scene-based life cycle, the theme is recovered before SceneDelegate creates the window
++ (void) applyThemeToWindowsShownLater {
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    [NSNotificationCenter.defaultCenter addObserverForName:UIWindowDidBecomeVisibleNotification
+                                                    object:nil
+                                                     queue:nil
+                                                usingBlock:^(NSNotification *notification) {
+      UIWindow *window = notification.object;
+      if (cachedStyle != UIUserInterfaceStyleUnspecified) {
+        window.overrideUserInterfaceStyle = cachedStyle;
+      }
+    }];
+  });
 }
 
 + (nullable NSString*) getRCTAppearanceOverride: (UIUserInterfaceStyle) style {
